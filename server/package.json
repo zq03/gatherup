@@ -1,0 +1,16 @@
+{
+  "name": "gatherup-server",
+  "version": "1.0.0",
+  "description": "GatherUp live-sync server — stores each jio and syncs it between everyone on the link.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
