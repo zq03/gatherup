@@ -1,12 +1,10 @@
-<!doctype html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GatherUp</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&amp;family=Instrument+Sans:wght@400;500;600&amp;display=swap">
 <style>
 :root{
   --bg:#F5F2FA; --surface:#FFFFFF; --surface-2:#F2EEF8; --surface-3:#EAE4F3;
@@ -15,7 +13,8 @@
   --primary:#F0563E; --primary-ink:#C93A24;
   --when:#E1900B; --where:#3D74F0; --what:#F0563E; --split:#12A46E;
   --when-bg:#FBEFD6; --where-bg:#E2ECFD; --what-bg:#FCE3DE; --split-bg:#D6F2E6;
-  --good:#12A46E; --shadow:0 1px 2px rgba(36,30,49,.05),0 8px 24px rgba(36,30,49,.07);
+  --good:#12A46E; --warn:#E1900B; --star:#F5A623;
+  --shadow:0 1px 2px rgba(36,30,49,.05),0 8px 24px rgba(36,30,49,.07);
   --shadow-lg:0 4px 12px rgba(36,30,49,.08),0 24px 60px rgba(36,30,49,.14);
   --radius:18px; --radius-sm:12px; --maxw:560px;
 }
@@ -26,7 +25,7 @@
   --primary:#FF6B54; --primary-ink:#FF8B78;
   --when:#F0AE3B; --where:#6C9AFF; --what:#FF6B54; --split:#2FCB8E;
   --when-bg:#3A2E14; --where-bg:#1E2A45; --what-bg:#3A2019; --split-bg:#15342A;
-  --good:#2FCB8E;
+  --good:#2FCB8E; --warn:#F0AE3B; --star:#F5B740;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
   --shadow-lg:0 4px 12px rgba(0,0,0,.4),0 24px 60px rgba(0,0,0,.5);
 }}
@@ -37,7 +36,7 @@
   --primary:#FF6B54; --primary-ink:#FF8B78;
   --when:#F0AE3B; --where:#6C9AFF; --what:#FF6B54; --split:#2FCB8E;
   --when-bg:#3A2E14; --where-bg:#1E2A45; --what-bg:#3A2019; --split-bg:#15342A;
-  --good:#2FCB8E;
+  --good:#2FCB8E; --warn:#F0AE3B; --star:#F5B740;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
   --shadow-lg:0 4px 12px rgba(0,0,0,.4),0 24px 60px rgba(0,0,0,.5);
 }
@@ -48,21 +47,22 @@ body{margin:0;background:var(--bg);color:var(--ink);
   font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;padding:22px 16px 64px}
 h1,h2,h3{font-family:"Bricolage Grotesque","Instrument Sans",sans-serif;margin:0;text-wrap:balance;letter-spacing:-.01em}
 button{font-family:inherit;cursor:pointer}
-input{font-family:inherit}
+input,select,textarea{font-family:inherit}
 :focus-visible{outline:2.5px solid var(--where);outline-offset:2px;border-radius:8px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .wrap{max-width:var(--maxw);margin:0 auto}
 
-.topbar{display:flex;align-items:center;gap:9px;margin-bottom:14px;padding:0 2px}
+.topbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:0 2px}
 .logo{display:flex;align-items:center;gap:9px;font-family:"Bricolage Grotesque";font-weight:800;font-size:20px;letter-spacing:-.02em}
 .logo-mark{width:30px;height:30px;border-radius:9px;flex:none;background:linear-gradient(135deg,var(--primary),var(--when));display:grid;place-items:center;color:#fff;font-size:16px;box-shadow:0 3px 8px rgba(240,86,62,.35)}
 .spacer{flex:1}
-.me-btn{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 10px 5px 5px;font-size:13px;font-weight:600;color:var(--ink);max-width:140px}
+.me-btn{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 10px 5px 5px;font-size:13px;font-weight:600;color:var(--ink);max-width:118px}
 .me-btn .av{width:24px;height:24px;font-size:10px;margin:0;border:none}
 .me-btn .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .me-btn .cv{color:var(--ink-faint);font-size:11px}
-.icon-btn{width:36px;height:36px;border-radius:11px;border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);font-size:15px;display:grid;place-items:center;transition:.15s;flex:none}
+.icon-btn{width:36px;height:36px;border-radius:11px;border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);font-size:15px;display:grid;place-items:center;transition:.15s;flex:none;position:relative}
 .icon-btn:hover{color:var(--ink);border-color:var(--ink-faint)}
+.badge{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:var(--primary);color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center;border:2px solid var(--bg);font-family:"Bricolage Grotesque"}
 
 .livebar{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;padding:0 4px}
 .live-dot{width:8px;height:8px;border-radius:50%;background:var(--good);animation:pulse 2s infinite;flex:none}
@@ -75,16 +75,22 @@ input{font-family:inherit}
 .event-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:16px;position:relative;overflow:hidden}
 .event-card::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:linear-gradient(var(--when),var(--where),var(--what),var(--split))}
 .event-top{display:flex;align-items:flex-start;gap:12px}
-.event-name{font-size:23px;font-weight:800;line-height:1.15}
-.event-sub{color:var(--ink-soft);font-size:14px;margin-top:3px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.event-name{font-size:23px;font-weight:800;line-height:1.15;display:flex;align-items:center;gap:8px}
+.ev-edit{border:none;background:transparent;color:var(--ink-faint);font-size:15px;padding:2px;border-radius:6px}
+.ev-edit:hover{color:var(--ink)}
+.event-note{color:var(--ink-soft);font-size:13.5px;margin-top:2px}
+.event-sub{color:var(--ink-soft);font-size:14px;margin-top:5px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .dot{width:3px;height:3px;border-radius:50%;background:var(--ink-faint);display:inline-block}
 .avatars{display:flex;margin-left:auto;flex:none}
 .av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:600;border:2px solid var(--surface);margin-left:-9px;font-family:"Bricolage Grotesque"}
 .av:first-child{margin-left:0}
 .av-more{background:var(--surface-3);color:var(--ink-soft)}
+.countdown{margin-top:11px;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+.countdown.urgent{background:var(--what-bg);color:var(--what);border-color:transparent}
+.countdown.closed{background:var(--surface-2);color:var(--ink-faint)}
 
 .stepper{display:flex;gap:7px;margin-bottom:18px}
-.step{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:11px 8px 10px;text-align:center;transition:.18s;color:var(--ink-soft);display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0}
+.step{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:11px 8px 10px;text-align:center;transition:.18s;color:var(--ink-soft);display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;position:relative}
 .step:hover{border-color:var(--ink-faint)}
 .step .num{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:14px;font-weight:700;background:var(--surface-2);color:var(--ink-soft);transition:.18s;font-family:"Bricolage Grotesque"}
 .step .lbl{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
@@ -93,6 +99,8 @@ input{font-family:inherit}
 .step.active[data-k="where"]{background:var(--where-bg)} .step.active[data-k="where"] .num{background:var(--where);color:#fff}
 .step.active[data-k="what"]{background:var(--what-bg)} .step.active[data-k="what"] .num{background:var(--what);color:#fff}
 .step.active[data-k="split"]{background:var(--split-bg)} .step.active[data-k="split"] .num{background:var(--split);color:#fff}
+.step .sdot{position:absolute;top:7px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--good);display:none}
+.step.done-all .sdot{display:block}
 
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
 .panel-head{padding:20px 22px 16px;border-bottom:1px solid var(--line-soft)}
@@ -107,14 +115,22 @@ input{font-family:inherit}
 .chip.lead{background:var(--split-bg);color:var(--split)}
 .tabnums{font-variant-numeric:tabular-nums}
 
+/* progress */
+.progress{display:flex;align-items:center;gap:10px;background:var(--surface-2);border-radius:12px;padding:11px 13px;margin-bottom:15px;font-size:13px}
+.pbar{flex:1;height:7px;border-radius:999px;background:var(--surface-3);overflow:hidden;min-width:40px}
+.pbar > i{display:block;height:100%;border-radius:999px;background:var(--good);transition:width .4s cubic-bezier(.2,.8,.2,1)}
+.pcount{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pwaiting{color:var(--ink-soft);font-size:12px;margin-top:-6px;margin-bottom:14px;padding:0 2px}
+.alldone{background:var(--split-bg);color:var(--split);border-radius:12px;padding:11px 14px;font-size:13.5px;font-weight:600;margin-bottom:15px;display:flex;align-items:center;gap:8px}
+
 .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;font-size:13px;color:var(--ink-soft)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .sw{width:13px;height:13px;border-radius:4px;display:inline-block;border:1px solid var(--line)}
 .grid-scroll{overflow-x:auto;margin:0 -22px;padding:0 22px}
 .wgrid{display:grid;gap:6px;min-width:340px}
-.wgrid .gh{font-size:12px;font-weight:600;color:var(--ink-soft);text-align:center;padding-bottom:2px}
-.wgrid .gh.rowh{text-align:left;color:var(--ink-faint);font-weight:600;display:flex;align-items:center}
-.slot{height:40px;border-radius:9px;background:var(--surface-2);border:1.5px solid transparent;display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--ink-faint);transition:.12s}
+.wgrid .gh{font-size:11.5px;font-weight:600;color:var(--ink-soft);text-align:center;padding-bottom:2px;line-height:1.1}
+.wgrid .gh.rowh{text-align:left;color:var(--ink-faint);font-weight:600;display:flex;align-items:center;font-size:12px}
+.slot{height:38px;border-radius:9px;background:var(--surface-2);border:1.5px solid transparent;display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--ink-faint);transition:.12s}
 .slot.mine{outline:2.5px solid var(--when);outline-offset:-2.5px;color:var(--when)}
 .slot.best{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--when)}
 .myrow-slot{cursor:pointer}
@@ -132,22 +148,26 @@ input{font-family:inherit}
 .opt-emoji{width:42px;height:42px;border-radius:11px;background:var(--surface-2);display:grid;place-items:center;font-size:21px;flex:none}
 .opt-main{flex:1;min-width:0}
 .opt-name{font-weight:700;font-size:15.5px}
-.opt-meta{font-size:13px;color:var(--ink-soft);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.opt-meta{font-size:13px;color:var(--ink-soft);margin-top:2px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tag{display:inline-flex;align-items:center;gap:3px;background:var(--surface-2);border-radius:6px;padding:1px 7px;font-size:11.5px;font-weight:600;color:var(--ink-soft)}
+.tag.price{color:var(--split)}
+.tag.stars{color:var(--star)}
 .opt-votes{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:none}
-.bar{width:60px;height:6px;border-radius:999px;background:var(--surface-3);overflow:hidden}
+.bar{width:56px;height:6px;border-radius:999px;background:var(--surface-3);overflow:hidden}
 .bar > i{display:block;height:100%;border-radius:999px;background:var(--where);transition:width .4s cubic-bezier(.2,.8,.2,1)}
 .opt.what .bar > i{background:var(--what)}
 .votebtn{border:1.5px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:5px;transition:.15s;white-space:nowrap}
 .votebtn:hover{border-color:var(--ink)}
 .opt.voted .votebtn{background:var(--where);border-color:var(--where);color:#fff}
 .opt.what.voted .votebtn{background:var(--what);border-color:var(--what)}
-.addrow{display:flex;gap:8px;margin-top:6px}
-.addrow input{flex:1;border:1px solid var(--line);background:var(--surface-2);border-radius:11px;padding:11px 13px;font-size:14.5px;color:var(--ink)}
-.addrow input::placeholder{color:var(--ink-faint)}
-.btn{border:none;border-radius:11px;padding:11px 16px;font-size:14.5px;font-weight:700;background:var(--ink);color:var(--surface);transition:.15s;white-space:nowrap}
-.btn:hover{opacity:.9}
-.btn.ghost{background:var(--surface-2);color:var(--ink)}
-.btn.block{width:100%;justify-content:center;display:flex;align-items:center;gap:7px}
+.quick{margin:2px 0 14px}
+.quick-lbl{font-size:12px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.quick-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.quick-chip{flex:none;border:1px dashed var(--line);background:var(--surface);border-radius:11px;padding:8px 11px;font-size:12.5px;font-weight:600;text-align:left;color:var(--ink);transition:.14s;line-height:1.25}
+.quick-chip:hover{border-color:var(--what);border-style:solid}
+.quick-chip small{display:block;color:var(--ink-soft);font-weight:500;font-size:11px}
+.addbtn{width:100%;border:1.5px dashed var(--line);background:var(--surface-2);color:var(--ink);border-radius:12px;padding:12px;font-weight:700;font-size:14px;transition:.15s}
+.addbtn:hover{border-color:var(--ink-faint)}
 
 .total-card{background:var(--split-bg);border-radius:var(--radius-sm);padding:16px 18px;margin-bottom:16px}
 .total-label{font-size:13px;font-weight:600;color:var(--split);text-transform:uppercase;letter-spacing:.05em}
@@ -191,17 +211,23 @@ input{font-family:inherit}
 
 .footnav{display:flex;gap:10px;margin-top:16px}
 .footnav .btn{flex:1;justify-content:center;display:flex;align-items:center;gap:7px}
+.btn{border:none;border-radius:11px;padding:11px 16px;font-size:14.5px;font-weight:700;background:var(--ink);color:var(--surface);transition:.15s;white-space:nowrap}
+.btn:hover{opacity:.9}
+.btn.ghost{background:var(--surface-2);color:var(--ink)}
+.btn.block{width:100%;justify-content:center;display:flex;align-items:center;gap:7px}
 .hint{text-align:center;color:var(--ink-faint);font-size:12.5px;margin-top:22px;padding:0 10px;line-height:1.55}
 .ro-note{display:none;background:var(--when-bg);color:var(--ink);border-radius:12px;padding:11px 14px;font-size:13px;margin-bottom:14px;text-align:center}
 .ro .ro-note{display:block}
-.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--surface);padding:11px 18px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;transition:.25s;pointer-events:none;z-index:60}
+
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--surface);padding:11px 18px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;transition:.25s;pointer-events:none;z-index:90;max-width:88vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .fade{animation:fade .3s cubic-bezier(.2,.8,.2,1)}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.overlay{position:fixed;inset:0;background:rgba(20,16,25,.55);backdrop-filter:blur(3px);display:grid;place-items:center;z-index:80;padding:20px}
-.sheet{background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow-lg);max-width:400px;width:100%;padding:26px 24px}
-.sheet h2{font-size:22px;font-weight:800;margin-bottom:6px}
-.sheet p{color:var(--ink-soft);font-size:14.5px;margin:0 0 18px}
+
+.overlay{position:fixed;inset:0;background:rgba(20,16,25,.55);backdrop-filter:blur(3px);display:grid;place-items:center;z-index:80;padding:20px;overflow:auto}
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow-lg);max-width:420px;width:100%;padding:24px 22px;margin:auto}
+.sheet h2{font-size:21px;font-weight:800;margin-bottom:6px}
+.sheet p{color:var(--ink-soft);font-size:14px;margin:0 0 16px}
 .mem-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
 .mem-pick{display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 13px 5px 5px;font-size:14px;font-weight:600;transition:.14s}
 .mem-pick:hover{border-color:var(--ink)}
@@ -209,51 +235,98 @@ input{font-family:inherit}
 .sheet .divider{display:flex;align-items:center;gap:10px;color:var(--ink-faint);font-size:12px;margin:4px 0 14px}
 .sheet .divider::before,.sheet .divider::after{content:"";flex:1;height:1px;background:var(--line)}
 .join-row{display:flex;gap:8px}
-.join-row input{flex:1;border:1px solid var(--line);background:var(--surface-2);border-radius:11px;padding:12px 14px;font-size:15px;color:var(--ink)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px}
+.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);background:var(--surface-2);border-radius:11px;padding:11px 13px;font-size:14.5px;color:var(--ink)}
+.field textarea{resize:vertical;min-height:52px}
+.chips-edit{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}
+.dchip{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:5px 6px 5px 11px;font-size:12.5px;font-weight:600}
+.dchip button{border:none;background:transparent;color:var(--ink-faint);font-size:15px;line-height:1;padding:0 2px;cursor:pointer}
+.dchip button:hover{color:var(--what)}
+.price-seg{display:flex;gap:6px}
+.price-seg button{flex:1;border:1px solid var(--line);background:var(--surface-2);border-radius:9px;padding:8px;font-weight:700;font-size:13px;color:var(--ink-soft)}
+.price-seg button.on{background:var(--split-bg);border-color:var(--split);color:var(--split)}
+.star-pick{display:flex;gap:3px}
+.star-pick button{border:none;background:transparent;font-size:22px;color:var(--surface-3);padding:0;line-height:1;cursor:pointer}
+.star-pick button.on{color:var(--star)}
+
+/* activity panel */
+.act-wrap{position:fixed;inset:0;z-index:85;display:none}
+.act-wrap.open{display:block}
+.act-bg{position:absolute;inset:0;background:rgba(20,16,25,.4)}
+.act-panel{position:absolute;top:0;right:0;bottom:0;width:min(340px,86vw);background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;animation:slidein .22s cubic-bezier(.2,.8,.2,1)}
+@keyframes slidein{from{transform:translateX(20px);opacity:.6}to{transform:none;opacity:1}}
+.act-head{padding:18px 18px 14px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:10px}
+.act-head h3{font-size:17px;font-weight:800;flex:1}
+.act-list{flex:1;overflow-y:auto;padding:8px 0}
+.act-item{padding:11px 18px;display:flex;gap:11px;align-items:flex-start;font-size:13.5px}
+.act-item .ai-dot{width:8px;height:8px;border-radius:50%;background:var(--where);margin-top:6px;flex:none}
+.act-item .ai-t{flex:1}
+.act-item .ai-time{font-size:11.5px;color:var(--ink-faint);margin-top:2px}
+.act-empty{padding:40px 20px;text-align:center;color:var(--ink-faint);font-size:13.5px}
+.nudge-bar{padding:14px 18px;border-top:1px solid var(--line-soft)}
+
+.hidden{display:none!important}
 @media(max-width:560px){body{padding:18px 12px 60px}}
 </style>
 </head>
 <body>
 
 <!-- ========================================================================
-     CONFIG — point this at YOUR VPS.
-     After you deploy the server (see server/README), set this to your VPS
-     address. Use wss:// (secure) if your site is on https (GitHub Pages is).
-     Example:  window.GATHERUP_BACKEND = "wss://gather.mydomain.com";
-     Leave it as "" to run the page in offline preview mode (per-device only).
+     CONFIG — this points at YOUR VPS (via your permanent ngrok address).
+     If you ever change the tunnel, update the line below (keep wss://).
 ========================================================================= -->
 <script>
-       window.GATHERUP_BACKEND = "wss://stage-mushily-ascertain.ngrok-free.dev";
+  window.GATHERUP_BACKEND = "wss://stage-mushily-ascertain.ngrok-free.dev";
 </script>
 
-<div id="root"></div>
+<div id="root"><div class="wrap"><div class="topbar"><div class="logo"><span class="logo-mark">◎</span>GatherUp</div><div class="spacer"></div><button class="me-btn" id="meBtn"><span class="av" style="background:#F0563E">Z</span><span class="nm">zi qiang</span><span class="cv">▾</span></button><button class="icon-btn" id="bellBtn" title="Activity">🔔<span class="badge hidden" id="bellBadge"></span></button><button class="icon-btn" id="newBtn" title="Start a new jio">＋</button><button class="icon-btn" id="shareBtn" title="Copy invite link">⇪</button><button class="icon-btn" id="themeBtn" title="Toggle theme">◐</button></div><div class="livebar" id="livebar"><span class="live-dot"></span><span id="liveText">Live · 1 person on this jio</span><span class="sync-chip" id="syncchip">Synced ✓</span></div><div class="event-card"><div class="event-top"><div style="min-width:0"><div class="event-name"><span id="evName">New Jio 🎉</span><button class="ev-edit" id="evEdit" title="Edit details">✎</button></div><div class="event-note" id="evNote" style="display: none;"></div><div class="event-sub"><span id="evWhen">—</span><span class="dot"></span><span id="evCount">1 kaki</span><span class="dot"></span><span id="evWhere">—</span></div><div id="evCountdown"></div></div><div class="avatars" id="avatars"><div class="av" style="background: rgb(240, 86, 62);">Z</div></div></div></div><div class="ro-note">Read-only view.</div><div class="stepper" id="stepper"><button class="step" data-k="when"><span class="num">1</span><span class="lbl">When</span><span class="sdot"></span></button><button class="step" data-k="where"><span class="num">2</span><span class="lbl">Where</span><span class="sdot"></span></button><button class="step" data-k="what"><span class="num">3</span><span class="lbl">What</span><span class="sdot"></span></button><button class="step active" data-k="split"><span class="num">4</span><span class="lbl">Split</span><span class="sdot"></span></button></div><div class="panel fade" id="panel"><div class="panel-head"><div class="eyebrow" style="color:var(--split)"><span class="pip" style="background:var(--split)"></span>Step 4 · Settle up</div><div class="panel-title">Split the bill</div><div class="panel-desc">Scan the receipt, tap who shared each dish, and GatherUp works out who PayNows whom.</div></div><div class="panel-body"><div class="total-card"><div class="total-label">Bill total</div><div class="total-input"><span class="cur">S$</span><input id="totalIn" inputmode="decimal" value="0.00"></div></div><div class="seg"><button data-mode="even" class="on">Split evenly</button><button data-mode="items" class="">By item</button></div><button class="scan-btn" id="scanBtn">📷 Scan receipt</button><p class="scan-note">Tap to itemise — assign each dish to the friends who shared it.</p><div class="payer-row"><span class="muted">Who was there?</span><span class="muted" style="margin-left:auto">Tap to include / exclude</span></div><div class="who-scroll"><button class="who in" data-who="mmt46ldj0"><span class="av" style="background:#F0563E">Z</span><span class="nm">zi qiang</span><span class="amt">S$0.00</span></button></div><div class="payer-row" style="margin-top:8px"><span class="muted">Paid by</span><select id="payerSel" class="btn ghost" style="padding:9px 12px;border:1px solid var(--line)"><option value="mmt46ldj0">zi qiang (you)</option></select></div><div class="settle"><div class="row" style="justify-content:space-between;margin:16px 0 6px"><b>Everyone PayNows zi qiang (you)</b><span class="chip lead">S$0.00 each</span></div><p class="muted" style="font-size:14px">Add people above to see who owes what.</p><div class="settle-row" style="border:none"><span><span class="av" style="margin:0;border:none;width:38px;height:38px;font-size:15.200000000000001px;background:#F0563E">Z</span></span><div class="settle-info"><div class="nm">zi qiang (you)</div><div class="sub payer-tag">paid the bill · gets <span id="payerBack">S$0.00</span> back</div></div></div></div><button class="btn block" id="remindBtn" style="margin-top:14px;background:var(--split)">💸 Nudge everyone to settle up</button></div></div><div class="footnav" id="footnav"><button class="btn ghost">‹ Back</button><button class="btn ghost">📲 Share plan</button><button class="btn" style="background: var(--where);">📅 Calendar</button></div><p class="hint" id="hint">Live board — share the ⇪ link and everyone votes together. You're <b>zi qiang</b>; tap your name to switch.</p></div><div class="act-wrap" id="actWrap"><div class="act-bg" id="actBg"></div><div class="act-panel"><div class="act-head"><h3>Activity</h3><button class="icon-btn" id="actClose">✕</button></div><div class="act-list" id="actList"></div><div class="nudge-bar"><button class="btn block" id="remindVoteBtn" style="background:var(--where);margin-bottom:8px">🔔 Remind people to vote</button><button class="btn block" id="nudgeBtn" style="background:var(--split)">💸 Nudge everyone to settle up</button></div></div></div></div>
 
 <script>
 (function(){
   "use strict";
-  var DAYS=["Fri 29","Sat 30","Sun 31"];
-  var TIMES=["12pm","3pm","6:30pm","9pm"];
+  var TIMES=[{k:"11:00",l:"11am"},{k:"13:00",l:"1pm"},{k:"15:00",l:"3pm"},{k:"17:00",l:"5pm"},{k:"19:00",l:"7pm"},{k:"21:00",l:"9pm"}];
   var NEWCOLORS=["#F0563E","#3D74F0","#12A46E","#E1900B","#8A5CF0","#E0559A","#2AB0C4","#7A6FF0","#0FB5A6","#F0783A"];
+  var DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var SCAN_ITEMS=[
     {name:"Signature pork broth ×2",amt:"24.00"},{name:"Wagyu beef platter",amt:"88.00"},
     {name:"Prawn paste chicken",amt:"22.00"},{name:"Assorted meatballs",amt:"34.00"},
     {name:"Veg & tofu platter",amt:"28.50"},{name:"Beer tower ×2",amt:"48.00"},
     {name:"Fresh juices ×2",amt:"32.00"},{name:"Service charge + GST",amt:"10.00"}
   ];
-  function emptyState(){return {event:{name:"New Jio 🎉"},members:[],avail:{},where:[],what:[],bill:{total:"0.00",payer:"",mode:"even",present:{},items:[]}};}
+  var POPULAR=[
+    {name:"Beauty in the Pot",cuisine:"Hotpot",price:2,rating:5,emoji:"🍲"},
+    {name:"Din Tai Fung",cuisine:"Dumplings",price:2,rating:5,emoji:"🥟"},
+    {name:"A-One Claypot",cuisine:"Zi char",price:1,rating:4,emoji:"🍜"},
+    {name:"PS.Cafe",cuisine:"Western",price:3,rating:4,emoji:"🍝"},
+    {name:"Swee Choon",cuisine:"Dim sum",price:1,rating:4,emoji:"🥠"}
+  ];
+  var PRICE_L=["","$","$$","$$$"];
+
+  function pad(n){n=""+n;return n.length<2?"0"+n:n;}
+  function isoOf(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+  function defaultDates(){var out=[];var now=new Date();now.setHours(0,0,0,0);for(var i=0;i<7;i++){out.push(isoOf(new Date(now.getTime()+i*86400000)));}return out;}
+  function fmtDate(iso){var d=new Date(iso+"T00:00:00");if(isNaN(d))return {label:iso,dow:"",dm:iso};return {dow:DOW[d.getDay()],dm:d.getDate()+" "+MON[d.getMonth()],label:DOW[d.getDay()]+" "+d.getDate()};}
+  function emptyState(){return {event:{name:"New Jio 🎉",note:"",dates:defaultDates(),deadline:null},members:[],avail:{},where:[],what:[],bill:{total:"0.00",payer:"",mode:"even",present:{},items:[]},activity:[]};}
 
   var LKEY="gatherup.local";
   var SHARED=emptyState(), local={meId:null,step:0};
   var WS=null, wsReady=false, roomId=null, applyingRemote=false, sendTimer=null, peers=1, netState="connecting";
+  var seenActLen=0, unread=0, actOpen=false, cdTimer=null;
+  function validUrl(u){u=(u||"").trim();if(!u)return "";if(!/^https?:\/\//i.test(u))u="https://"+u;return u;}
 
   var $=function(s,r){return (r||document).querySelector(s);};
   function el(t,c,h){var e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e;}
-  function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
   function money(n){return n.toLocaleString("en-SG",{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function revShort(n){return n>=1000?(n/1000).toFixed(1).replace(/\.0$/,"")+"k":(""+n);}
   function initials(n){return (n||"?").trim().slice(0,1).toUpperCase();}
   function genId(){var s="abcdefghijkmnpqrstuvwxyz23456789",o="";for(var i=0;i<6;i++)o+=s[Math.floor(Math.random()*s.length)];return o;}
+  function now(){return Date.now();}
   function memberById(id){for(var i=0;i<SHARED.members.length;i++)if(SHARED.members[i].id===id)return SHARED.members[i];return {id:id,name:"?",color:"#888"};}
   function me(){return memberById(local.meId);}
+  function isMe(id){return id===local.meId;}
 
   function readLocal(){try{var r=localStorage.getItem(LKEY);if(r)return Object.assign({meId:null,step:0},JSON.parse(r));}catch(e){}return {meId:null,step:0};}
   function saveLocal(){try{localStorage.setItem(LKEY,JSON.stringify(local));}catch(e){}}
@@ -263,14 +336,26 @@ input{font-family:inherit}
 
   function normalize(){
     SHARED=SHARED||emptyState();
-    SHARED.event=SHARED.event||{name:"Jio"};
+    var ev=SHARED.event=SHARED.event||{};
+    if(!ev.name)ev.name="New Jio 🎉"; if(ev.note==null)ev.note="";
+    if(!ev.dates||!ev.dates.length)ev.dates=defaultDates();
+    if(ev.deadline===undefined)ev.deadline=null;
     SHARED.members=SHARED.members||[];
     SHARED.avail=SHARED.avail||{};
     SHARED.where=SHARED.where||[];
     SHARED.what=SHARED.what||[];
+    SHARED.what.forEach(function(o){if(o.cuisine==null)o.cuisine="";if(o.price==null)o.price=0;if(o.rating==null)o.rating=0;});
     SHARED.bill=SHARED.bill||{total:"0.00",payer:"",mode:"even",present:{},items:[]};
     SHARED.bill.present=SHARED.bill.present||{};
     SHARED.bill.items=SHARED.bill.items||[];
+    SHARED.activity=SHARED.activity||[];
+  }
+
+  function pushActivity(text){
+    SHARED.activity=SHARED.activity||[];
+    SHARED.activity.push({id:genId()+now().toString(36),ts:now(),text:text});
+    if(SHARED.activity.length>60)SHARED.activity=SHARED.activity.slice(-60);
+    seenActLen=SHARED.activity.length; // it's mine; don't self-notify
   }
 
   /* ---------- networking ---------- */
@@ -278,27 +363,37 @@ input{font-family:inherit}
   function setNet(s){netState=s; updateLive();}
   function connect(){
     var backend=(window.GATHERUP_BACKEND||"").trim();
-    if(!backend){ // offline preview mode
-      var off=loadOffline(); if(off){SHARED=off;} else if(roomId==="demo"){SHARED=window.__DEMO__?window.__DEMO__():emptyState();}
-      normalize(); setNet("local"); ensureIdentity(); render(); return;
-    }
-    try{
-      WS=new WebSocket(backend);
-    }catch(e){ setNet("local"); var o2=loadOffline(); if(o2)SHARED=o2; normalize(); ensureIdentity(); render(); return; }
+    if(!backend){ var off=loadOffline(); if(off){SHARED=off;} normalize(); seenActLen=SHARED.activity.length; setNet("local"); ensureIdentity(); render(); return; }
+    try{ WS=new WebSocket(backend); }
+    catch(e){ setNet("local"); var o2=loadOffline(); if(o2)SHARED=o2; normalize(); seenActLen=SHARED.activity.length; ensureIdentity(); render(); return; }
     WS.onopen=function(){ wsReady=true; setNet("live"); WS.send(JSON.stringify({type:"join",room:roomId})); };
     WS.onmessage=function(ev){
       var msg; try{msg=JSON.parse(ev.data);}catch(e){return;}
-      if(msg.type==="state"){ applyingRemote=true; SHARED=msg.state; normalize(); saveOffline(); ensureIdentity(); render(); applyingRemote=false; }
+      if(msg.type==="state"){ onRemoteState(msg.state); }
       else if(msg.type==="peers"){ peers=msg.n; updateLive(); }
     };
     WS.onclose=function(){ wsReady=false; setNet("recon"); setTimeout(connect,1600); };
     WS.onerror=function(){ try{WS.close();}catch(e){} };
   }
+  function onRemoteState(state){
+    applyingRemote=true;
+    var hadInit=(SHARED.activity&&SHARED.activity.length);
+    SHARED=state; normalize(); saveOffline();
+    // detect new activity from others
+    var acts=SHARED.activity||[];
+    if(seenActLen===0 && !hadInit){ seenActLen=acts.length; }
+    else if(acts.length>seenActLen){
+      var fresh=acts.slice(seenActLen); unread+=fresh.length;
+      var last=fresh[fresh.length-1]; if(last) toast("🔔 "+last.text);
+      seenActLen=acts.length;
+    } else { seenActLen=acts.length; }
+    ensureIdentity(); render(); applyingRemote=false;
+  }
   function scheduleSend(){
     saveOffline();
-    if(!wsReady){ return; }
+    if(!wsReady) return;
     clearTimeout(sendTimer);
-    sendTimer=setTimeout(function(){ try{WS.send(JSON.stringify({type:"update",room:roomId,state:SHARED}));}catch(e){} showSync("Synced ✓");},250);
+    sendTimer=setTimeout(function(){ try{WS.send(JSON.stringify({type:"update",room:roomId,state:SHARED}));}catch(e){} showSync("Synced ✓"); },250);
   }
   function commit(){ render(); if(applyingRemote) return; showSync("Saving…"); scheduleSend(); }
 
@@ -333,9 +428,10 @@ input{font-family:inherit}
     sheet.innerHTML=h; ov.appendChild(sheet); document.body.appendChild(ov);
     Array.prototype.forEach.call(sheet.querySelectorAll("[data-pick]"),function(b){b.onclick=function(){local.meId=this.getAttribute("data-pick");saveLocal();ov.remove();render();};});
     var join=function(){var v=$("#joinName").value.trim();if(!v)return;
-      var id="m"+Date.now().toString(36);var color=NEWCOLORS[SHARED.members.length%NEWCOLORS.length];
-      SHARED.members.push({id:id,name:v,color:color});SHARED.bill.present[id]=true;local.meId=id;saveLocal();ov.remove();commit();};
-    $("#joinBtn").onclick=join; $("#joinName").onkeydown=function(e){if(e.key==="Enter")join();}; $("#joinName").focus();
+      var id="m"+now().toString(36);var color=NEWCOLORS[SHARED.members.length%NEWCOLORS.length];
+      SHARED.members.push({id:id,name:v,color:color});SHARED.bill.present[id]=true;local.meId=id;saveLocal();ov.remove();
+      pushActivity(v+" joined the jio 👋"); commit();};
+    $("#joinBtn").onclick=join; $("#joinName").onkeydown=function(e){if(e.key==="Enter")join();}; setTimeout(function(){var j=$("#joinName");if(j)j.focus();},50);
     var c=$("#idCancel"); if(c)c.onclick=function(){ov.remove();};
   }
 
@@ -344,60 +440,183 @@ input{font-family:inherit}
     $("#root").innerHTML='<div class="wrap">'
      +'<div class="topbar"><div class="logo"><span class="logo-mark">◎</span>GatherUp</div><div class="spacer"></div>'
      +'<button class="me-btn" id="meBtn"></button>'
+     +'<button class="icon-btn" id="bellBtn" title="Activity">🔔<span class="badge hidden" id="bellBadge"></span></button>'
      +'<button class="icon-btn" id="newBtn" title="Start a new jio">＋</button>'
-     +'<button class="icon-btn" id="shareBtn" title="Copy share link">⇪</button>'
+     +'<button class="icon-btn" id="shareBtn" title="Copy invite link">⇪</button>'
      +'<button class="icon-btn" id="themeBtn" title="Toggle theme">◐</button></div>'
      +'<div class="livebar" id="livebar"><span class="live-dot"></span><span id="liveText">Connecting…</span><span class="sync-chip" id="syncchip"></span></div>'
-     +'<div class="event-card"><div class="event-top"><div><div class="event-name" id="evName">Jio 🎉</div>'
-     +'<div class="event-sub"><span id="evWhen">—</span><span class="dot"></span><span id="evCount"></span><span class="dot"></span><span id="evWhere">—</span></div></div>'
+     +'<div class="event-card"><div class="event-top"><div style="min-width:0">'
+     +'<div class="event-name"><span id="evName">Jio 🎉</span><button class="ev-edit" id="evEdit" title="Edit details">✎</button></div>'
+     +'<div class="event-note" id="evNote"></div>'
+     +'<div class="event-sub"><span id="evWhen">—</span><span class="dot"></span><span id="evCount"></span><span class="dot"></span><span id="evWhere">—</span></div>'
+     +'<div id="evCountdown"></div></div>'
      +'<div class="avatars" id="avatars"></div></div></div>'
      +'<div class="ro-note">Read-only view.</div>'
      +'<div class="stepper" id="stepper"></div><div class="panel" id="panel"></div><div class="footnav" id="footnav"></div>'
-     +'<p class="hint" id="hint"></p></div>';
+     +'<p class="hint" id="hint"></p></div>'
+     +'<div class="act-wrap" id="actWrap"><div class="act-bg" id="actBg"></div><div class="act-panel">'
+     +'<div class="act-head"><h3>Activity</h3><button class="icon-btn" id="actClose">✕</button></div>'
+     +'<div class="act-list" id="actList"></div>'
+     +'<div class="nudge-bar"><button class="btn block" id="remindVoteBtn" style="background:var(--where);margin-bottom:8px">🔔 Remind people to vote</button><button class="btn block" id="nudgeBtn" style="background:var(--split)">💸 Nudge everyone to settle up</button></div>'
+     +'</div></div>';
     $("#themeBtn").onclick=function(){var cur=document.documentElement.getAttribute("data-theme");var isDark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",isDark?"light":"dark");};
-    $("#shareBtn").onclick=function(){var url=location.href;if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(function(){toast("🔗 Link copied — send to your kakis");},function(){toast("🔗 "+url);});else toast("🔗 "+url);};
+    $("#shareBtn").onclick=function(){var url=location.href;if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(function(){toast("🔗 Invite link copied — send to your kakis");},function(){toast("🔗 "+url);});else toast("🔗 "+url);};
     $("#meBtn").onclick=function(){showIdentity(true);};
     $("#newBtn").onclick=function(){var id=genId();location.hash=id;location.reload();};
+    $("#evEdit").onclick=openEventSheet;
+    $("#bellBtn").onclick=openActivity;
+    $("#actClose").onclick=closeActivity;
+    $("#actBg").onclick=closeActivity;
+    $("#nudgeBtn").onclick=function(){ if(readOnly())return; pushActivity(me().name+" says: settle up! 💸 Please PayNow your share."); commit(); toast("Nudge sent to everyone 💸"); };
+    $("#remindVoteBtn").onclick=function(){ if(readOnly())return; var w=participation("when").waiting; pushActivity(me().name+" reminded everyone to vote 🔔"+(w.length?" — still waiting on "+w.map(function(m){return m.name;}).join(", "):"")); commit(); toast("Reminder sent 🔔"); };
   }
+  function readOnly(){return false;}
 
   var STEPS=[{k:"when",num:"1",lbl:"When"},{k:"where",num:"2",lbl:"Where"},{k:"what",num:"3",lbl:"What"},{k:"split",num:"4",lbl:"Split"}];
 
+  /* ---------- participation / progress ---------- */
+  function slotKeys(){var ks=[];SHARED.event.dates.forEach(function(d){TIMES.forEach(function(t){ks.push(d+"|"+t.k);});});return ks;}
+  function memberVotedWhen(id){var a=SHARED.avail[id];if(!a)return false;var ks=slotKeys();for(var i=0;i<ks.length;i++)if(a[ks[i]])return true;return false;}
+  function memberVotedList(list,id){for(var i=0;i<list.length;i++)if(list[i].votes.indexOf(id)>-1)return true;return false;}
+  function participation(stepKey){
+    var voted=[],waiting=[];
+    SHARED.members.forEach(function(m){
+      var did = stepKey==="when"?memberVotedWhen(m.id): memberVotedList(stepKey==="where"?SHARED.where:SHARED.what,m.id);
+      (did?voted:waiting).push(m);
+    });
+    return {voted:voted,waiting:waiting,total:SHARED.members.length};
+  }
+  function progressHTML(stepKey,accent){
+    var p=participation(stepKey); if(p.total===0)return "";
+    var pct=Math.round(p.voted.length/p.total*100);
+    var h='<div class="progress"><span class="pcount">'+p.voted.length+' of '+p.total+' voted</span>'
+      +'<div class="pbar"><i style="width:'+pct+'%"></i></div></div>';
+    if(p.waiting.length && p.waiting.length<p.total)
+      h+='<div class="pwaiting">Waiting on '+p.waiting.map(function(m){return esc(m.name);}).join(", ")+'</div>';
+    if(p.voted.length===p.total)
+      h='<div class="alldone">✅ Everyone\'s voted!</div>'+ '';
+    return h;
+  }
+  function stepComplete(stepKey){var p=participation(stepKey);return p.total>0&&p.voted.length===p.total;}
+
+  function renderStepper(){var box=$("#stepper");box.innerHTML="";STEPS.forEach(function(st,i){var b=el("button","step"+(i===local.step?" active":"")+(stepComplete(st.k)?" done-all":""));b.setAttribute("data-k",st.k);b.innerHTML='<span class="num">'+st.num+'</span><span class="lbl">'+st.lbl+'</span><span class="sdot"></span>';b.onclick=function(){local.step=i;saveLocal();render();};box.appendChild(b);});}
+
+  /* ---------- WHEN ---------- */
   function slotCount(slot){var n=0;SHARED.members.forEach(function(m){if(SHARED.avail[m.id]&&SHARED.avail[m.id][slot])n++;});return n;}
-  function bestSlot(){var best=null;DAYS.forEach(function(d){TIMES.forEach(function(t){var c=slotCount(d+"|"+t);if(!best||c>best.c)best={d:d,t:t,c:c};});});return best;}
-
-  function renderStepper(){var box=$("#stepper");box.innerHTML="";STEPS.forEach(function(st,i){var b=el("button","step"+(i===local.step?" active":""));b.setAttribute("data-k",st.k);b.innerHTML='<span class="num">'+st.num+'</span><span class="lbl">'+st.lbl+'</span>';b.onclick=function(){local.step=i;saveLocal();render();};box.appendChild(b);});}
-
+  function bestSlot(){var best=null;SHARED.event.dates.forEach(function(d){TIMES.forEach(function(t){var c=slotCount(d+"|"+t.k);if(!best||c>best.c)best={d:d,t:t,c:c};});});return best;}
+  function bestLabel(){var b=bestSlot();if(!b||b.c<=0)return null;return fmtDate(b.d).label.replace(/^\w+ /,fmtDate(b.d).dow+" ")+" · "+b.t.l;}
   function panelWhen(){
-    var p=$("#panel");p.className="panel fade";var best=bestSlot();var n=SHARED.members.length;var myId=local.meId,myav=SHARED.avail[myId]||{};
+    var p=$("#panel");p.className="panel fade";var best=bestSlot();var n=SHARED.members.length;var myId=local.meId,myav=SHARED.avail[myId]||{};var dates=SHARED.event.dates;
     var h='<div class="panel-head"><div class="eyebrow" style="color:var(--when)"><span class="pip" style="background:var(--when)"></span>Step 1 · Timing</div>'
-      +'<div class="panel-title">When can everyone make it?</div><div class="panel-desc">Tap the slots <b>you</b> ('+esc(me().name)+') are free. GatherUp finds the time that fits the most kakis.</div></div><div class="panel-body">';
+      +'<div class="panel-title">When can everyone make it?</div><div class="panel-desc">Tap the slots <b>you</b> ('+esc(me().name)+') are free. Vote anytime — no need to wait for everyone.</div></div><div class="panel-body">';
+    h+=progressHTML("when","when");
     h+='<div class="legend"><span><span class="sw" style="background:var(--when-bg);border-color:var(--when)"></span>Best overlap</span><span><span class="sw" style="outline:2px solid var(--when);outline-offset:-2px"></span>You\'re free</span><span><span class="sw"></span>Tap to toggle</span></div>';
-    h+='<div class="grid-scroll"><div class="wgrid" style="grid-template-columns:64px repeat('+TIMES.length+',1fr)"><div class="gh rowh"></div>';
-    TIMES.forEach(function(t){h+='<div class="gh">'+t+'</div>';});
-    DAYS.forEach(function(d){h+='<div class="gh rowh">'+d+'</div>';TIMES.forEach(function(t){var slot=d+"|"+t;var c=slotCount(slot);var isMine=!!myav[slot];var isBest=(best.d===d&&best.t===t&&best.c>0);h+='<div class="slot myrow-slot'+(isMine?" mine":"")+(isBest?" best":"")+'" data-slot="'+slot+'"><span class="cnt">'+c+'</span></div>';});});
+    h+='<div class="grid-scroll"><div class="wgrid" style="grid-template-columns:70px repeat('+TIMES.length+',1fr)"><div class="gh rowh"></div>';
+    TIMES.forEach(function(t){h+='<div class="gh">'+t.l+'</div>';});
+    dates.forEach(function(d){var fd=fmtDate(d);h+='<div class="gh rowh">'+fd.label+'</div>';TIMES.forEach(function(t){var slot=d+"|"+t.k;var c=slotCount(slot);var isMine=!!myav[slot];var isBest=(best&&best.d===d&&best.t.k===t.k&&best.c>0);h+='<div class="slot myrow-slot'+(isMine?" mine":"")+(isBest?" best":"")+'" data-slot="'+slot+'"><span>'+c+'</span></div>';});});
     h+='</div></div>';
-    if(best.c>0)h+='<div class="best-banner"><span class="best-ico">★</span><div>Best time so far: <b>'+best.d+' at '+best.t+'</b> — works for <b>'+best.c+' of '+n+'</b>. '+(best.c>=n&&n>0?'Everyone can make it! ✅':'Still waiting on a few.')+'</div></div>';
+    if(best&&best.c>0){var fd=fmtDate(best.d);h+='<div class="best-banner"><span class="best-ico">★</span><div>Best time so far: <b>'+fd.dow+' '+fd.dm+' at '+best.t.l+'</b> — works for <b>'+best.c+' of '+n+'</b>. '+(best.c>=n&&n>0?'Everyone can make it! ✅':'')+'</div></div>';}
+    h+='<button class="btn ghost block" id="editDates" style="margin-top:14px">📅 Add / change dates</button>';
     h+='</div>';p.innerHTML=h;
-    Array.prototype.forEach.call(p.querySelectorAll(".myrow-slot"),function(s){s.onclick=function(){var k=this.getAttribute("data-slot");if(!SHARED.avail[myId])SHARED.avail[myId]={};if(SHARED.avail[myId][k])delete SHARED.avail[myId][k];else SHARED.avail[myId][k]=true;commit();};});
+    Array.prototype.forEach.call(p.querySelectorAll(".myrow-slot"),function(s){s.onclick=function(){var k=this.getAttribute("data-slot");if(!SHARED.avail[myId])SHARED.avail[myId]={};var was=memberVotedWhen(myId);if(SHARED.avail[myId][k])delete SHARED.avail[myId][k];else SHARED.avail[myId][k]=true;if(!was&&memberVotedWhen(myId))pushActivity(me().name+" filled in their availability 🗓️");commit();};});
+    $("#editDates").onclick=openEventSheet;
   }
 
+  /* ---------- WHERE / WHAT ---------- */
   function optionPanel(kind){
     var isWhere=kind==="where";var list=isWhere?SHARED.where:SHARED.what;var accent=isWhere?"where":"what";
     var maxV=list.reduce(function(m,o){return Math.max(m,o.votes.length);},1);
     var leadId=list.slice().sort(function(a,b){return b.votes.length-a.votes.length;})[0];leadId=leadId&&leadId.votes.length>0?leadId.id:null;
     var p=$("#panel");p.className="panel fade";
-    var head=isWhere?{n:"Step 2 · Location",t:"Where should we meet?",d:"Central + MRT-friendly so nobody travels forever. Vote your pick or add one."}:{n:"Step 3 · Food",t:"What are we eating?",d:"Sit-down spots that take the whole group. Vote, or drop another idea."};
+    var head=isWhere?{n:"Step 2 · Location",t:"Where should we meet?",d:"Central + MRT-friendly so nobody travels forever. Vote your pick or add one."}:{n:"Step 3 · Food",t:"What are we eating?",d:"Add a spot with cuisine, price and a rating — then everyone votes."};
     var h='<div class="panel-head"><div class="eyebrow" style="color:var(--'+accent+')"><span class="pip" style="background:var(--'+accent+')"></span>'+head.n+'</div><div class="panel-title">'+head.t+'</div><div class="panel-desc">'+head.d+'</div></div><div class="panel-body">';
+    h+=progressHTML(kind,accent);
+    if(!isWhere){
+      h+='<div class="quick"><div class="quick-lbl">Popular spots — tap to add</div><div class="quick-row">';
+      POPULAR.forEach(function(s,i){ if(list.some(function(o){return o.name===s.name;}))return; h+='<button class="quick-chip" data-pop="'+i+'">'+s.emoji+' '+esc(s.name)+'<small>'+esc(s.cuisine)+' · '+PRICE_L[s.price]+'</small></button>';});
+      h+='</div></div>';
+    }
     if(list.length===0)h+='<p class="empty-hint">No options yet — add the first one below. 👇</p>';
     list.forEach(function(o){var voted=o.votes.indexOf(local.meId)>-1;var lead=(o.id===leadId);
-      h+='<div class="opt '+accent+(voted?" voted":"")+(lead?" leader":"")+'"><div class="opt-emoji">'+o.emoji+'</div><div class="opt-main"><div class="opt-name">'+esc(o.name)+'</div><div class="opt-meta">'+esc(o.meta)+'</div></div><div class="opt-votes"><div class="bar"><i style="width:'+Math.round(o.votes.length/maxV*100)+'%"></i></div><button class="votebtn" data-vote="'+o.id+'">'+(voted?'✓ Voted':'♡ Vote')+' · '+o.votes.length+'</button></div></div>';});
-    h+='<div class="addrow"><input id="addInput" placeholder="'+(isWhere?"Add a place (e.g. Chinatown)":"Add a spot (e.g. Din Tai Fung)")+'" maxlength="40"><button class="btn" id="addBtn">Add</button></div></div>';
+      var meta='';
+      if(isWhere){ meta = o.area?'<span class="tag">📍 '+esc(o.area)+'</span>':''; }
+      else{
+        if(o.cuisine)meta+='<span class="tag">'+esc(o.cuisine)+'</span>';
+        if(o.price)meta+='<span class="tag price">'+PRICE_L[o.price]+'</span>';
+        if(o.rating)meta+='<span class="tag stars">'+"★".repeat(o.rating)+'</span>';
+      }
+      if(o.url)meta+='<a class="tag" style="color:var(--where)" href="'+esc(o.url)+'" target="_blank" rel="noopener">📍 Open in Maps ↗</a>';
+      if(!meta)meta='<span class="tag">Added by '+esc((memberById(o.by||"").name)||"someone")+'</span>';
+      h+='<div class="opt '+accent+(voted?" voted":"")+(lead?" leader":"")+'"><div class="opt-emoji">'+(o.emoji||(isWhere?"📍":"🍴"))+'</div><div class="opt-main"><div class="opt-name">'+esc(o.name)+'</div><div class="opt-meta">'+meta+'</div></div><div class="opt-votes"><div class="bar"><i style="width:'+Math.round(o.votes.length/maxV*100)+'%"></i></div><button class="votebtn" data-vote="'+o.id+'">'+(voted?'✓ Voted':'♡ Vote')+' · '+o.votes.length+'</button></div></div>';});
+    h+='<button class="addbtn" id="addBtn">+ Add '+(isWhere?"a place":"a restaurant")+'</button></div>';
     p.innerHTML=h;
-    Array.prototype.forEach.call(p.querySelectorAll("[data-vote]"),function(b){b.onclick=function(){var id=this.getAttribute("data-vote");var o=list.filter(function(x){return x.id===id;})[0];var i=o.votes.indexOf(local.meId);if(i>-1)o.votes.splice(i,1);else o.votes.push(local.meId);commit();};});
-    var add=function(){var v=$("#addInput").value.trim();if(!v)return;list.push({id:kind+Date.now().toString(36),emoji:isWhere?"📍":"🍴",name:v,meta:"Added by "+me().name,votes:[local.meId]});commit();};
-    $("#addBtn").onclick=add;$("#addInput").onkeydown=function(e){if(e.key==="Enter")add();};
+    Array.prototype.forEach.call(p.querySelectorAll("[data-vote]"),function(b){b.onclick=function(){var id=this.getAttribute("data-vote");var o=list.filter(function(x){return x.id===id;})[0];var i=o.votes.indexOf(local.meId);if(i>-1){o.votes.splice(i,1);}else{o.votes.push(local.meId);pushActivity(me().name+" voted for "+o.name+" 🗳️");}commit();};});
+    Array.prototype.forEach.call(p.querySelectorAll("[data-pop]"),function(b){b.onclick=function(){var s=POPULAR[+this.getAttribute("data-pop")];list.push({id:kind+genId(),emoji:s.emoji,name:s.name,cuisine:s.cuisine,price:s.price,rating:s.rating,by:local.meId,votes:[local.meId]});pushActivity(me().name+" added "+s.name+" 🍽️");commit();};});
+    $("#addBtn").onclick=function(){ isWhere?openPlaceSheet():openFoodSheet(); };
   }
 
+  function openPlaceSheet(){
+    var ov=el("div","overlay");var sheet=el("div","sheet");
+    sheet.innerHTML='<h2>Add a place 📍</h2>'
+      +'<div class="field"><label>Place name</label><input id="pn" placeholder="e.g. Bugis" maxlength="60"></div>'
+      +'<div class="field"><label>Area / MRT (optional)</label><input id="pa" placeholder="e.g. Bugis MRT, Downtown line" maxlength="80"></div>'
+      +'<div class="field"><label>Google Maps link (optional)</label><input id="pl" placeholder="Paste a maps.app.goo.gl / Google Maps link" maxlength="400"></div>'
+      +'<div class="row" style="gap:8px"><button class="btn ghost" id="pc" style="flex:1">Cancel</button><button class="btn" id="pok" style="flex:1">Add place</button></div>';
+    ov.appendChild(sheet);document.body.appendChild(ov);
+    setTimeout(function(){$("#pn").focus();},50);
+    $("#pc").onclick=function(){ov.remove();};
+    $("#pok").onclick=function(){var v=$("#pn").value.trim();if(!v){$("#pn").focus();return;}var o={id:"where"+genId(),emoji:"📍",name:v,area:$("#pa").value.trim(),url:validUrl($("#pl").value),by:local.meId,votes:[local.meId]};SHARED.where.push(o);pushActivity(me().name+" added "+v+" 📍");ov.remove();commit();};
+  }
+  function openFoodSheet(){
+    var price=0,rating=0;
+    var ov=el("div","overlay");var sheet=el("div","sheet");
+    function setPrice(p){price=p;Array.prototype.forEach.call(sheet.querySelectorAll("#fps button"),function(x){x.classList.toggle("on",+x.getAttribute("data-p")===price);});}
+    function setStars(r){rating=r;Array.prototype.forEach.call(sheet.querySelectorAll("#frs button"),function(x){x.classList.toggle("on",+x.getAttribute("data-s")<=rating);});}
+    sheet.innerHTML='<h2>Add a restaurant 🍽️</h2>'
+      +'<div class="field"><label>Restaurant name</label><input id="fn" placeholder="e.g. Din Tai Fung" maxlength="60"></div>'
+      +'<div class="field"><label>Cuisine</label><input id="fcz" placeholder="e.g. Dumplings, Hotpot, Western" maxlength="24"></div>'
+      +'<div class="field"><label>Price</label><div class="price-seg" id="fps"><button data-p="1">$</button><button data-p="2">$$</button><button data-p="3">$$$</button></div></div>'
+      +'<div class="field"><label>Rating (optional)</label><div class="star-pick" id="frs"><button data-s="1">★</button><button data-s="2">★</button><button data-s="3">★</button><button data-s="4">★</button><button data-s="5">★</button></div></div>'
+      +'<div class="field"><label>Google Maps link (optional)</label><input id="fl" placeholder="Paste a maps.app.goo.gl / Google Maps link" maxlength="400"></div>'
+      +'<div class="row" style="gap:8px"><button class="btn ghost" id="fc" style="flex:1">Cancel</button><button class="btn" id="fok" style="flex:1">Add</button></div>';
+    ov.appendChild(sheet);document.body.appendChild(ov);
+    setTimeout(function(){$("#fn").focus();},50);
+    Array.prototype.forEach.call(sheet.querySelectorAll("#fps button"),function(b){b.onclick=function(){setPrice(+this.getAttribute("data-p"));};});
+    Array.prototype.forEach.call(sheet.querySelectorAll("#frs button"),function(b){b.onclick=function(){setStars(+this.getAttribute("data-s"));};});
+    $("#fc").onclick=function(){ov.remove();};
+    $("#fok").onclick=function(){var v=$("#fn").value.trim();if(!v){$("#fn").focus();return;}var o={id:"what"+genId(),emoji:"🍴",name:v,cuisine:$("#fcz").value.trim(),price:price,rating:rating,url:validUrl($("#fl").value),by:local.meId,votes:[local.meId]};SHARED.what.push(o);pushActivity(me().name+" added "+v+" 🍽️");ov.remove();commit();};
+  }
+
+  /* ---------- edit event sheet (name, note, dates, deadline) ---------- */
+  function openEventSheet(){
+    var ev=SHARED.event;
+    var wname=ev.name, wnote=ev.note||"", wdl=ev.deadline||null, dates=ev.dates.slice();
+    var ov=el("div","overlay");var sheet=el("div","sheet");
+    function dlStr(){ if(!wdl)return ""; var d=new Date(wdl); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes()); }
+    function sync(){ var a=$("#en");if(a)wname=a.value; var b=$("#enote");if(b)wnote=b.value; var c=$("#edl");if(c)wdl=c.value?new Date(c.value).getTime():null; }
+    function draw(){
+      sheet.innerHTML='<h2>Edit jio ✎</h2>'
+        +'<div class="field"><label>Name</label><input id="en" maxlength="40" value="'+esc(wname)+'"></div>'
+        +'<div class="field"><label>Note (optional)</label><textarea id="enote" maxlength="120" placeholder="e.g. Sarah\'s birthday makan!">'+esc(wnote)+'</textarea></div>'
+        +'<div class="field"><label>Dates to poll</label><div class="chips-edit" id="dchips">'
+        + dates.map(function(d,i){var fd=fmtDate(d);return '<span class="dchip">'+fd.dow+' '+fd.dm+'<button data-rm="'+i+'">✕</button></span>';}).join('')
+        + '</div><input type="date" id="adddate"></div>'
+        +'<div class="field"><label>Voting deadline (optional)</label><input type="datetime-local" id="edl" value="'+dlStr()+'"></div>'
+        +'<div class="row" style="gap:8px"><button class="btn ghost" id="ec" style="flex:1">Cancel</button><button class="btn" id="eok" style="flex:1">Save</button></div>';
+      Array.prototype.forEach.call(sheet.querySelectorAll("[data-rm]"),function(b){b.onclick=function(){sync();dates.splice(+this.getAttribute("data-rm"),1);draw();};});
+      $("#adddate").onchange=function(){sync();var v=this.value;if(v&&dates.indexOf(v)<0){dates.push(v);dates.sort();}draw();};
+      $("#ec").onclick=function(){ov.remove();};
+      $("#eok").onclick=function(){
+        sync();
+        ev.name=(wname||"").trim()||"Jio 🎉"; ev.note=(wnote||"").trim();
+        if(dates.length)ev.dates=dates.slice(); ev.deadline=wdl;
+        pushActivity(me().name+" updated the plan ✎"); ov.remove(); commit();
+      };
+    }
+    ov.appendChild(sheet); document.body.appendChild(ov); draw();
+  }
+
+  /* ---------- SPLIT ---------- */
   function presentList(){return SHARED.members.filter(function(m){return SHARED.bill.present[m.id]!==false;});}
   function itemShare(it){var w=(it.who||[]).filter(function(id){return SHARED.bill.present[id]!==false;});var n=w.length||presentList().length||1;return (parseFloat(it.amt)||0)/n;}
   function computeShares(){var b=SHARED.bill;var pres=presentList();var shares={};pres.forEach(function(m){shares[m.id]=0;});var allIds=pres.map(function(m){return m.id;});
@@ -414,28 +633,28 @@ input{font-family:inherit}
     h+='<div class="seg"><button data-mode="even" class="'+(isItems?"":"on")+'">Split evenly</button><button data-mode="items" class="'+(isItems?"on":"")+'">By item</button></div>';
     h+='<button class="scan-btn" id="scanBtn">📷 Scan receipt</button><p class="scan-note">'+(isItems?'Prototype fills in a sample receipt. Wire up real photo OCR on your server later.':'Tap to itemise — assign each dish to the friends who shared it.')+'</p>';
     if(isItems){h+='<div style="margin-bottom:14px">';
-      b.items.forEach(function(it,i){h+='<div class="item"><div class="itemrow"><input class="nm" data-in="'+i+'" value="'+esc(it.name).replace(/"/g,"&quot;")+'" placeholder="Item"><input class="pr" data-ip="'+i+'" inputmode="decimal" value="'+it.amt+'"><button class="del" data-idel="'+i+'">×</button></div><div class="item-who"><span class="lbl">Shared by</span>';
+      b.items.forEach(function(it,i){h+='<div class="item"><div class="itemrow"><input class="nm" data-in="'+i+'" value="'+esc(it.name)+'" placeholder="Item"><input class="pr" data-ip="'+i+'" inputmode="decimal" value="'+it.amt+'"><button class="del" data-idel="'+i+'">×</button></div><div class="item-who"><span class="lbl">Shared by</span>';
         pres.forEach(function(m){var on=(it.who||[]).indexOf(m.id)>-1;h+='<button class="iav'+(on?" on":"")+'" data-item="'+i+'" data-p="'+m.id+'" style="background:'+m.color+'" title="'+esc(m.name)+'">'+initials(m.name)+'</button>';});
         h+='<span class="item-split" data-isp="'+i+'">S$'+money(itemShare(it))+' ea</span></div></div>';});
-      h+='<button class="btn ghost block" id="addItem">+ Add item</button></div><div class="row" style="justify-content:space-between;margin-bottom:14px;font-weight:700"><span>Items total</span><span id="itemsTotal" class="tabnums" style="font-family:Bricolage Grotesque">S$'+money(total)+'</span></div>';}
+      h+='<button class="addbtn" id="addItem">+ Add item</button></div><div class="row" style="justify-content:space-between;margin-bottom:14px;font-weight:700"><span>Items total</span><span id="itemsTotal" class="tabnums" style="font-family:Bricolage Grotesque">S$'+money(total)+'</span></div>';}
     h+='<div class="payer-row"><span class="muted">Who was there?</span><span class="muted" style="margin-left:auto">Tap to include / exclude</span></div><div class="who-scroll">';
     if(SHARED.members.length===0)h+='<span class="muted" style="font-size:13px">Members appear here once people join.</span>';
     SHARED.members.forEach(function(m){var inc=SHARED.bill.present[m.id]!==false;h+='<button class="who'+(inc?" in":"")+'" data-who="'+m.id+'"><span class="av" style="background:'+m.color+'">'+initials(m.name)+'</span><span class="nm">'+esc(m.name)+'</span><span class="amt">'+(inc?"S$"+money(shares[m.id]||0):"—")+'</span></button>';});
     h+='</div><div class="payer-row" style="margin-top:8px"><span class="muted">Paid by</span><select id="payerSel" class="btn ghost" style="padding:9px 12px;border:1px solid var(--line)">';
-    SHARED.members.forEach(function(m){h+='<option value="'+m.id+'"'+(m.id===b.payer?" selected":"")+'>'+esc(m.name)+(m.id===local.meId?" (you)":"")+'</option>';});
-    h+='</select></div><div class="settle"><div class="row" style="justify-content:space-between;margin:16px 0 6px"><b>Everyone PayNows '+esc(payer.name)+(payer.id===local.meId?" (you)":"")+'</b><span class="chip lead">'+(isItems?"Split by item":"S$"+money(total/(pres.length||1))+" each")+'</span></div>';
+    SHARED.members.forEach(function(m){h+='<option value="'+m.id+'"'+(m.id===b.payer?" selected":"")+'>'+esc(m.name)+(isMe(m.id)?" (you)":"")+'</option>';});
+    h+='</select></div><div class="settle"><div class="row" style="justify-content:space-between;margin:16px 0 6px"><b>Everyone PayNows '+esc(payer.name)+(isMe(payer.id)?" (you)":"")+'</b><span class="chip lead">'+(isItems?"Split by item":"S$"+money(total/(pres.length||1))+" each")+'</span></div>';
     var owe=pres.filter(function(m){return m.id!==payer.id;});var back=0;
     if(owe.length===0)h+='<p class="muted" style="font-size:14px">Add people above to see who owes what.</p>';
-    owe.forEach(function(m){var amt=Math.round((shares[m.id]||0)*100)/100;back+=amt;h+='<div class="settle-row"><span>'+avatarHTML(m,38)+'</span><div class="settle-info"><div class="nm">'+esc(m.name)+(m.id===local.meId?" (you)":"")+'</div><div class="sub">owes '+esc(payer.name)+'</div></div><span class="settle-amt" data-owe="'+m.id+'">S$'+money(shares[m.id]||0)+'</span><span class="paynow">PayNow ›</span></div>';});
-    if(payer.id)h+='<div class="settle-row" style="border:none"><span>'+avatarHTML(payer,38)+'</span><div class="settle-info"><div class="nm">'+esc(payer.name)+(payer.id===local.meId?" (you)":"")+'</div><div class="sub payer-tag">paid the bill · gets <span id="payerBack">S$'+money(back)+'</span> back</div></div></div>';
-    h+='</div><button class="btn block" id="remindBtn" style="margin-top:14px;background:var(--split)">Send PayNow reminders to '+owe.length+' friends</button></div>';
+    owe.forEach(function(m){var amt=Math.round((shares[m.id]||0)*100)/100;back+=amt;h+='<div class="settle-row"><span>'+avatarHTML(m,38)+'</span><div class="settle-info"><div class="nm">'+esc(m.name)+(isMe(m.id)?" (you)":"")+'</div><div class="sub">owes '+esc(payer.name)+'</div></div><span class="settle-amt" data-owe="'+m.id+'">S$'+money(shares[m.id]||0)+'</span><span class="paynow">PayNow ›</span></div>';});
+    if(payer.id)h+='<div class="settle-row" style="border:none"><span>'+avatarHTML(payer,38)+'</span><div class="settle-info"><div class="nm">'+esc(payer.name)+(isMe(payer.id)?" (you)":"")+'</div><div class="sub payer-tag">paid the bill · gets <span id="payerBack">S$'+money(back)+'</span> back</div></div></div>';
+    h+='</div><button class="btn block" id="remindBtn" style="margin-top:14px;background:var(--split)">💸 Nudge everyone to settle up</button></div>';
     p.innerHTML=h;wireSplit(b,pres);
   }
   function wireSplit(b,pres){
     var p=$("#panel");
     var ti=$("#totalIn");if(ti&&!ti.disabled){ti.oninput=function(){b.total=this.value.replace(/[^0-9.]/g,"");softUpdateSplit();};ti.onblur=function(){if(b.total)b.total=(parseFloat(b.total)||0).toFixed(2);commit();};}
     Array.prototype.forEach.call(p.querySelectorAll("[data-mode]"),function(btn){btn.onclick=function(){b.mode=this.getAttribute("data-mode");commit();};});
-    var scan=$("#scanBtn");if(scan)scan.onclick=function(){b.items=SCAN_ITEMS.map(function(it){return {name:it.name,amt:it.amt,who:pres.map(function(m){return m.id;})};});b.mode="items";commit();toast("🧾 Receipt scanned · "+SCAN_ITEMS.length+" items found");};
+    var scan=$("#scanBtn");if(scan)scan.onclick=function(){b.items=SCAN_ITEMS.map(function(it){return {name:it.name,amt:it.amt,who:pres.map(function(m){return m.id;})};});b.mode="items";pushActivity(me().name+" scanned the receipt 🧾");commit();toast("🧾 Receipt scanned · "+SCAN_ITEMS.length+" items found");};
     Array.prototype.forEach.call(p.querySelectorAll("[data-who]"),function(btn){btn.onclick=function(){var id=this.getAttribute("data-who");b.present[id]=(b.present[id]===false);commit();};});
     var sel=$("#payerSel");if(sel)sel.onchange=function(){b.payer=this.value;if(b.present[b.payer]===false)b.present[b.payer]=true;commit();};
     Array.prototype.forEach.call(p.querySelectorAll("[data-in]"),function(inp){inp.oninput=function(){b.items[+this.getAttribute("data-in")].name=this.value;};inp.onblur=function(){commit();};});
@@ -443,7 +662,7 @@ input{font-family:inherit}
     Array.prototype.forEach.call(p.querySelectorAll(".iav[data-item]"),function(btn){btn.onclick=function(){var i=+this.getAttribute("data-item");var pid=this.getAttribute("data-p");var it=b.items[i];if(!it.who)it.who=pres.map(function(m){return m.id;});var k=it.who.indexOf(pid);if(k>-1)it.who.splice(k,1);else it.who.push(pid);commit();};});
     Array.prototype.forEach.call(p.querySelectorAll("[data-idel]"),function(btn){btn.onclick=function(){b.items.splice(+this.getAttribute("data-idel"),1);commit();};});
     var ai=$("#addItem");if(ai)ai.onclick=function(){b.items.push({name:"",amt:"0.00",who:pres.map(function(m){return m.id;})});commit();};
-    var rb=$("#remindBtn");if(rb)rb.onclick=function(){toast("🔔 PayNow reminders sent (prototype)");};
+    var rb=$("#remindBtn");if(rb)rb.onclick=function(){pushActivity(me().name+" says: settle up! 💸 Please PayNow your share.");commit();toast("🔔 Settle-up nudge sent to everyone");};
   }
   function softUpdateSplit(){
     var b=SHARED.bill;var pres=presentList();var total=b.mode==="even"?(parseFloat(b.total)||0):b.items.reduce(function(s,it){return s+(parseFloat(it.amt)||0);},0);var shares=computeShares();
@@ -456,26 +675,114 @@ input{font-family:inherit}
     var chip=document.querySelector(".chip.lead");if(chip&&b.mode==="even")chip.textContent="S$"+money(total/(pres.length||1))+" each";
   }
 
+  /* ---------- share / calendar ---------- */
+  function planSummary(){
+    var b=bestLabel();
+    var wl=SHARED.where.slice().sort(function(a,z){return z.votes.length-a.votes.length;})[0];
+    var fl=SHARED.what.slice().sort(function(a,z){return z.votes.length-a.votes.length;})[0];
+    var parts=[SHARED.event.name];
+    if(b)parts.push("🗓️ "+b); if(wl&&wl.votes.length)parts.push("📍 "+wl.name); if(fl&&fl.votes.length)parts.push("🍽️ "+fl.name);
+    return {text:parts.join("  ·  "), best:b, where:wl, what:fl};
+  }
+  function shareWhatsApp(){
+    var s=planSummary(); var txt=s.text+"\n\nJoin & vote: "+location.href;
+    window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank");
+  }
+  function gcalUrl(){
+    var b=bestSlot(); if(!b||b.c<=0)return null;
+    var s=planSummary();
+    var start=new Date(b.d+"T"+b.t.k+":00"), end=new Date(start.getTime()+2*3600000);
+    function z(d){return d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+"T"+pad(d.getUTCHours())+pad(d.getUTCMinutes())+"00Z";}
+    var loc=(s.where&&s.where.votes.length)?s.where.name:"";
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE"
+      +"&text="+encodeURIComponent(SHARED.event.name)
+      +"&dates="+z(start)+"/"+z(end)
+      +"&details="+encodeURIComponent(s.text+"\n\nJoin & vote: "+location.href)
+      +"&location="+encodeURIComponent(loc);
+  }
+  function openCalendar(){
+    var g=gcalUrl();
+    var ov=el("div","overlay");var sheet=el("div","sheet");
+    if(!g){ sheet.innerHTML='<h2>Add to calendar 📅</h2><p>Vote on a time first (Step 1) so there\'s an event to add.</p><button class="btn block" id="cc">OK</button>'; }
+    else{ sheet.innerHTML='<h2>Add to calendar 📅</h2><p>Adds the current best time'+((planSummary().where&&planSummary().where.votes.length)?' at '+esc(planSummary().where.name):'')+'.</p>'
+      +'<button class="btn block" id="cg" style="margin-bottom:9px">📆 Google Calendar</button>'
+      +'<button class="btn ghost block" id="ci" style="margin-bottom:9px">🍎 Apple / Outlook (.ics)</button>'
+      +'<button class="btn ghost block" id="cc">Cancel</button>'; }
+    ov.appendChild(sheet);document.body.appendChild(ov);
+    var cc=$("#cc");if(cc)cc.onclick=function(){ov.remove();};
+    var cg=$("#cg");if(cg)cg.onclick=function(){window.open(g,"_blank");ov.remove();};
+    var ci=$("#ci");if(ci)ci.onclick=function(){downloadICS();ov.remove();};
+  }
+  function downloadICS(){
+    var b=bestSlot(); if(!b||b.c<=0){toast("Pick a time first (vote on When)");return;}
+    var s=planSummary();
+    var start=new Date(b.d+"T"+b.t.k+":00"); var end=new Date(start.getTime()+2*3600000);
+    function z(d){return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"T"+pad(d.getHours())+pad(d.getMinutes())+"00";}
+    var loc=(s.where&&s.where.votes.length)?s.where.name:"";
+    var ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//GatherUp//EN","BEGIN:VEVENT",
+      "UID:"+genId()+"@gatherup","DTSTAMP:"+z(new Date()),"DTSTART:"+z(start),"DTEND:"+z(end),
+      "SUMMARY:"+SHARED.event.name.replace(/\n/g," "),"LOCATION:"+loc.replace(/\n/g," "),
+      "DESCRIPTION:"+s.text.replace(/\n/g," ")+" — "+location.href,"END:VEVENT","END:VCALENDAR"].join("\r\n");
+    var blob=new Blob([ics],{type:"text/calendar"});var url=URL.createObjectURL(blob);
+    var a=document.createElement("a");a.href=url;a.download="gatherup.ics";document.body.appendChild(a);a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},500);
+    toast("📅 Calendar file downloaded");
+  }
+
+  /* ---------- activity panel ---------- */
+  function relTime(ts){var s=Math.floor((now()-ts)/1000);if(s<60)return "just now";var m=Math.floor(s/60);if(m<60)return m+"m ago";var h=Math.floor(m/60);if(h<24)return h+"h ago";return Math.floor(h/24)+"d ago";}
+  function openActivity(){actOpen=true;unread=0;$("#actWrap").classList.add("open");renderActivity();updateBell();}
+  function closeActivity(){actOpen=false;$("#actWrap").classList.remove("open");}
+  function renderActivity(){
+    var list=$("#actList");var a=(SHARED.activity||[]).slice().reverse();
+    if(!a.length){list.innerHTML='<div class="act-empty">No activity yet.<br>Votes and updates will show up here.</div>';return;}
+    list.innerHTML=a.map(function(x){return '<div class="act-item"><span class="ai-dot"></span><div class="ai-t">'+esc(x.text)+'<div class="ai-time">'+relTime(x.ts)+'</div></div></div>';}).join('');
+  }
+  function updateBell(){var bd=$("#bellBadge");if(!bd)return;if(unread>0){bd.textContent=unread>9?"9+":unread;bd.classList.remove("hidden");}else bd.classList.add("hidden");}
+
+  /* ---------- countdown ---------- */
+  function autoRemind(){
+    if(applyingRemote||!local.meId)return;
+    var ev=SHARED.event; if(!ev||!ev.deadline)return;
+    var diff=ev.deadline-now(); if(diff<=0||diff>60*60000)return;
+    var p=participation("when"); if(p.total===0||p.waiting.length===0)return;
+    if(ev.lastAutoRemind && (now()-ev.lastAutoRemind)<45*60000)return;
+    ev.lastAutoRemind=now();
+    pushActivity("⏰ Voting closes soon! Still waiting on "+p.waiting.map(function(m){return m.name;}).join(", "));
+    commit();
+  }
+  function renderCountdown(){
+    var box=$("#evCountdown");if(!box)return;var dl=SHARED.event.deadline;
+    if(!dl){box.innerHTML="";return;}
+    var diff=dl-now();
+    if(diff<=0){box.innerHTML='<span class="countdown closed">🔒 Voting closed</span>';return;}
+    var h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);
+    var txt=h>=24?(Math.floor(h/24)+"d "+(h%24)+"h"):(h>0?(h+"h "+m+"m"):(m+"m"));
+    box.innerHTML='<span class="countdown'+(diff<3600000?" urgent":"")+'">⏳ Vote closes in '+txt+'</span>';
+  }
+
   function renderFoot(){var f=$("#footnav");f.innerHTML="";
     if(local.step>0){var pb=el("button","btn ghost","‹ Back");pb.onclick=function(){local.step--;saveLocal();render();};f.appendChild(pb);}
     if(local.step<STEPS.length-1){var nb=el("button","btn","Next: "+STEPS[local.step+1].lbl+" ›");nb.onclick=function(){local.step++;saveLocal();render();};f.appendChild(nb);}
-    else{var db=el("button","btn","All done 🎉");db.style.background="var(--split)";db.onclick=function(){toast("Gathering sorted end-to-end! 🎊");};f.appendChild(db);}}
+    else{var sb=el("button","btn ghost","📲 Share plan");sb.onclick=shareWhatsApp;var cb=el("button","btn","📅 Calendar");cb.style.background="var(--where)";cb.onclick=openCalendar;f.appendChild(sb);f.appendChild(cb);}}
 
   function render(){
     updateLive();
     var mb=$("#meBtn");if(mb){var m=me();mb.innerHTML='<span class="av" style="background:'+m.color+'">'+initials(m.name)+'</span><span class="nm">'+esc(m.name)+'</span><span class="cv">▾</span>';}
     var en=$("#evName");if(en)en.textContent=(SHARED.event&&SHARED.event.name)||"Jio 🎉";
+    var no=$("#evNote");if(no){no.textContent=SHARED.event.note||"";no.style.display=SHARED.event.note?"block":"none";}
     var box=$("#avatars");if(box){box.innerHTML="";SHARED.members.slice(0,4).forEach(function(m){var a=el("div","av");a.style.background=m.color;a.textContent=initials(m.name);box.appendChild(a);});if(SHARED.members.length>4){var more=el("div","av av-more");more.textContent="+"+(SHARED.members.length-4);box.appendChild(more);}}
     var ec=$("#evCount");if(ec)ec.textContent=SHARED.members.length+(SHARED.members.length===1?" kaki":" kakis");
-    var hint=$("#hint");if(hint)hint.innerHTML=(netState==="live")?'Live board — share this link and everyone votes together. You\'re <b>'+esc(me().name)+'</b>; tap your name to switch.':'Offline preview — set your VPS address in the code to make it live for the group.';
+    var hint=$("#hint");if(hint)hint.innerHTML=(netState==="live")?'Live board — share the ⇪ link and everyone votes together. You\'re <b>'+esc(me().name)+'</b>; tap your name to switch.':'Offline preview — changes stay on this device.';
     renderStepper();var k=STEPS[local.step].k;
     if(k==="when")panelWhen();else if(k==="where")optionPanel("where");else if(k==="what")optionPanel("what");else panelSplit();
     renderFoot();
-    var wl=SHARED.where.slice().sort(function(a,b){return b.votes.length-a.votes.length;})[0];if($("#evWhere"))$("#evWhere").textContent=wl?wl.name:"—";
-    var best=bestSlot();if($("#evWhen"))$("#evWhen").textContent=(best&&best.c>0)?best.d.replace(/(\d+)/,"$1 Aug")+" · "+best.t:"—";
+    var wl=SHARED.where.slice().sort(function(a,b){return b.votes.length-a.votes.length;})[0];if($("#evWhere"))$("#evWhere").textContent=(wl&&wl.votes.length)?wl.name:"—";
+    var bl=bestLabel();if($("#evWhen"))$("#evWhen").textContent=bl||"—";
+    renderCountdown(); updateBell(); if(actOpen)renderActivity();
   }
 
-  var tmo;function toast(msg){var t=$("#gtoast");if(!t){t=el("div","toast");t.id="gtoast";document.body.appendChild(t);}t.textContent=msg;t.classList.add("show");clearTimeout(tmo);tmo=setTimeout(function(){t.classList.remove("show");},2200);}
+  var tmo;function toast(msg){var t=$("#gtoast");if(!t){t=el("div","toast");t.id="gtoast";document.body.appendChild(t);}t.textContent=msg;t.classList.add("show");clearTimeout(tmo);tmo=setTimeout(function(){t.classList.remove("show");},2600);}
 
   /* ---------- init ---------- */
   local=readLocal();
@@ -483,7 +790,9 @@ input{font-family:inherit}
   if(!roomId){ roomId=genId(); if(history&&history.replaceState)history.replaceState(null,"","#"+roomId); else location.hash=roomId; }
   skeleton();
   connect();
+  cdTimer=setInterval(function(){ renderCountdown(); autoRemind(); if(actOpen)renderActivity(); },30000);
 })();
 </script>
-</body>
-</html>
+
+
+</body></html>
