@@ -130,8 +130,20 @@ input,select,textarea{font-family:inherit}
 .step.active[data-k="when"]{background:var(--when-bg)} .step.active[data-k="when"] .num{background:var(--when);color:#fff}
 .step.active[data-k="where"]{background:var(--where-bg)} .step.active[data-k="where"] .num{background:var(--where);color:#fff}
 .step.active[data-k="what"]{background:var(--what-bg)} .step.active[data-k="what"] .num{background:var(--what);color:#fff}
+.step.active[data-k="plan"]{background:var(--what-bg)} .step.active[data-k="plan"] .num{background:var(--primary);color:#fff}
 .step.active[data-k="arrive"]{background:var(--split-bg)} .step.active[data-k="arrive"] .num{background:var(--good);color:#fff}
 .step.active[data-k="split"]{background:var(--split-bg)} .step.active[data-k="split"] .num{background:var(--split);color:#fff}
+.confirm-banner{background:linear-gradient(135deg,var(--split-bg),var(--where-bg));border-radius:14px;padding:14px 16px;margin-bottom:16px;border:1px solid var(--line)}
+.confirm-banner .cl{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--split);display:flex;align-items:center;gap:6px}
+.confirm-banner .cx{font-size:15px;font-weight:700;margin-top:6px;line-height:1.35}
+.plan-card{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.plan-line{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:15px}
+.plan-line:last-child{border:none}
+.plan-line .pe{width:34px;height:34px;border-radius:10px;background:var(--surface);display:grid;place-items:center;font-size:17px;flex:none}
+.plan-line .pv{font-weight:700}
+.plan-line .pk{font-size:11.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em}
+.locked-hero{text-align:center;padding:8px 0 4px}
+.locked-hero .lh{font-size:26px;font-weight:800;margin-bottom:6px}
 .step .sdot{position:absolute;top:6px;right:7px;width:6px;height:6px;border-radius:50%;background:var(--good);display:none}
 .step.done-all .sdot{display:block}
 
@@ -330,7 +342,7 @@ input,select,textarea{font-family:inherit}
     {name:"Fresh juices ×2",amt:"32.00"},{name:"Service charge + GST",amt:"10.00"}
   ];
   var STATUS={otw:{l:"On the way",e:"🚶",cls:"ab-otw"},here:{l:"Arrived",e:"✅",cls:"ab-here"},late:{l:"Running late",e:"⏰",cls:"ab-late"},no:{l:"Can't make it",e:"❌",cls:"ab-no"}};
-  var STEPS=[{k:"when",num:"1",lbl:"When"},{k:"where",num:"2",lbl:"Where"},{k:"what",num:"3",lbl:"What"},{k:"arrive",num:"4",lbl:"Arrive"},{k:"split",num:"5",lbl:"Split"}];
+  var STEPS=[{k:"when",num:"1",lbl:"When"},{k:"where",num:"2",lbl:"Where"},{k:"what",num:"3",lbl:"What"},{k:"plan",num:"4",lbl:"Plan"},{k:"arrive",num:"5",lbl:"Arrive"},{k:"split",num:"6",lbl:"Split"}];
 
   /* ---------- helpers ---------- */
   var $=function(s,r){return (r||document).querySelector(s);};
@@ -376,6 +388,7 @@ input,select,textarea{font-family:inherit}
     SHARED.bill=SHARED.bill||{total:"0.00",payer:"",mode:"even",present:{},items:[]};
     SHARED.bill.present=SHARED.bill.present||{}; SHARED.bill.items=SHARED.bill.items||[];
     SHARED.activity=SHARED.activity||[]; SHARED.arrival=SHARED.arrival||{};
+    SHARED.plan=SHARED.plan||{locked:false};
   }
   function pushActivity(text){SHARED.activity=SHARED.activity||[];SHARED.activity.push({id:genId()+now().toString(36),ts:now(),text:text});if(SHARED.activity.length>60)SHARED.activity=SHARED.activity.slice(-60);seenActLen=SHARED.activity.length;}
 
@@ -424,9 +437,14 @@ input,select,textarea{font-family:inherit}
   }
   function ensureMember(){
     if(!account||ensuredMember) return;
-    var has=false; for(var i=0;i<SHARED.members.length;i++)if(SHARED.members[i].id===account.id){has=true;break;}
     ensuredMember=true;
-    if(!has){ SHARED.members.push({id:account.id,name:account.name,color:colorFor(account.id)}); SHARED.bill.present[account.id]=true; pushActivity(account.name+" joined the jio 👋"); scheduleSend(); }
+    var has=false; for(var i=0;i<SHARED.members.length;i++)if(SHARED.members[i].id===account.id){has=true;break;}
+    var wasEmpty=SHARED.members.length===0;
+    var pend=null; try{pend=JSON.parse(localStorage.getItem("gatherup.pending")||"null");}catch(e){}
+    var applyPend=pend&&pend.id===roomId;
+    if(applyPend){ if(pend.name)SHARED.event.name=pend.name; SHARED.event.note=pend.note||""; try{localStorage.removeItem("gatherup.pending");}catch(e){} }
+    if(!has){ SHARED.members.push({id:account.id,name:account.name,color:colorFor(account.id)}); SHARED.bill.present[account.id]=true; pushActivity(account.name+(wasEmpty?" started the jio 🎉":" joined the jio 👋")); }
+    if(!has||applyPend) scheduleSend();
   }
   function scheduleSend(){ if(!wsReady||!authed)return; clearTimeout(sendTimer); sendTimer=setTimeout(function(){ send({type:"update",room:roomId,state:SHARED}); showSync("Synced ✓"); },250); }
   function commit(){ if(view==="jio")renderJio(); if(applyingRemote)return; showSync("Saving…"); scheduleSend(); }
@@ -481,8 +499,26 @@ input,select,textarea{font-family:inherit}
       +'</div>';
     setMeBtn();
     $("#themeBtn").onclick=toggleTheme;
-    $("#newJio").onclick=function(){ var id=genId(); location.hash=id; location.reload(); };
+    $("#newJio").onclick=function(){ renderCreate(); };
     Array.prototype.forEach.call(r.querySelectorAll("[data-open]"),function(b){b.onclick=function(){ location.hash=this.getAttribute("data-open"); location.reload(); };});
+  }
+  function renderCreate(){
+    view="create";
+    var d=new Date();var dn=meName()+"'s Jio · "+d.getDate()+" "+MON[d.getMonth()];
+    $("#root").innerHTML='<div class="wrap">'
+     +'<div class="topbar"><button class="icon-btn" id="cbBack" title="Back">‹</button><div class="logo" style="gap:7px"><span class="logo-mark">◎</span>GatherUp</div><div class="spacer"></div><button class="icon-btn" id="themeBtn" title="Theme">◐</button></div>'
+     +'<div class="auth-card" style="margin-top:2vh">'
+     +'<h1 class="home-h" style="margin:0 0 4px">Start a new jio 🎉</h1><p class="home-sub" style="margin-bottom:18px">Give it a name and post it — you\'ll sort out the time, place and food next.</p>'
+     +'<div class="field"><label>Jio name</label><input id="cName" maxlength="40" value="'+esc(dn)+'"></div>'
+     +'<div class="field"><label>Note (optional)</label><textarea id="cNote" maxlength="120" placeholder="e.g. Let\'s catch up! 🍜"></textarea></div>'
+     +'<button class="btn block" id="cCreate">Create &amp; invite friends</button>'
+     +'<button class="btn ghost block" id="cCancel" style="margin-top:9px">Cancel</button>'
+     +'</div></div>';
+    $("#themeBtn").onclick=toggleTheme;
+    $("#cbBack").onclick=function(){view="home";renderHome();};
+    $("#cCancel").onclick=function(){view="home";renderHome();};
+    $("#cCreate").onclick=function(){var nm=$("#cName").value.trim()||dn;var nt=$("#cNote").value.trim();var id=genId();try{localStorage.setItem("gatherup.pending",JSON.stringify({id:id,name:nm,note:nt}));}catch(e){}location.hash=id;location.reload();};
+    setTimeout(function(){var c=$("#cName");if(c)c.focus();},50);
   }
   function setMeBtn(){var mb=$("#meBtn");if(mb)mb.innerHTML='<span class="av" style="background:'+colorFor(meId())+'">'+initials(meName())+'</span><span class="nm">'+esc(meName())+'</span><span class="cv">▾</span>';mb&&(mb.onclick=openProfile);}
   function toggleTheme(){var cur=document.documentElement.getAttribute("data-theme");var isDark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",isDark?"light":"dark");}
@@ -526,7 +562,7 @@ input,select,textarea{font-family:inherit}
      +'<div class="event-note" id="evNote"></div>'
      +'<div class="event-sub"><span id="evWhen">—</span><span class="dot"></span><span id="evCount"></span><span class="dot"></span><span id="evWhere">—</span></div>'
      +'<div id="evCountdown"></div></div><div class="avatars" id="avatars"></div></div></div>'
-     +'<div class="stepper" id="stepper"></div><div class="panel" id="panel"></div><div class="footnav" id="footnav"></div>'
+     +'<div id="confirmBox"></div><div class="stepper" id="stepper"></div><div class="panel" id="panel"></div><div class="footnav" id="footnav"></div>'
      +'<p class="hint" id="hint"></p></div>'
      +'<div class="act-wrap" id="actWrap"><div class="act-bg" id="actBg"></div><div class="act-panel">'
      +'<div class="act-head"><h3>Activity</h3><button class="icon-btn" id="actClose">✕</button></div>'
@@ -627,6 +663,28 @@ input,select,textarea{font-family:inherit}
     ov.appendChild(sheet);document.body.appendChild(ov);draw();
   }
 
+  /* ---- PLAN (post / lock in) ---- */
+  function topOf(list){var s=list.slice().sort(function(a,z){return z.votes.length-a.votes.length;})[0];return (s&&s.votes.length)?s:null;}
+  function finalSlot(){var pl=SHARED.plan;if(pl&&pl.locked&&pl.dt){var tl=(TIMES.filter(function(x){return x.k===pl.dt.t;})[0]||{l:pl.dt.t}).l;return {d:pl.dt.d,t:{k:pl.dt.t,l:tl},c:1};}return bestSlot();}
+  function locName(){var pl=SHARED.plan;if(pl&&pl.locked)return pl.whereName||"";var wl=topOf(SHARED.where);return wl?wl.name:"";}
+  function panelPlan(){
+    var p=$("#panel");p.className="panel fade";var plan=SHARED.plan||{};
+    var best=bestSlot();var wl=topOf(SHARED.where);var fl=topOf(SHARED.what);
+    var h='<div class="panel-head"><div class="eyebrow" style="color:var(--primary)"><span class="pip" style="background:var(--primary)"></span>Step 4 · The plan</div><div class="panel-title">'+(plan.locked?"It's happening! 🎉":"Lock in the plan")+'</div><div class="panel-desc">'+(plan.locked?"The plan is posted. Share it or add it to your calendar.":"Here\'s what\'s winning so far — post it to lock it in for everyone.")+'</div></div><div class="panel-body">';
+    if(plan.locked)h+='<div class="locked-hero"><div class="lh">'+esc(SHARED.event.name)+'</div></div>';
+    var timeLbl=plan.locked?(plan.timeLabel||"—"):(bestLabel()||"— not decided yet");
+    var whereLbl=plan.locked?(plan.whereName||"—"):(wl?wl.name:"— no votes yet");
+    var whatLbl=plan.locked?(plan.whatName||"—"):(fl?fl.name:"— no votes yet");
+    h+='<div class="plan-card"><div class="plan-line"><span class="pe">🗓️</span><div><div class="pk">When</div><div class="pv">'+esc(timeLbl)+'</div></div></div><div class="plan-line"><span class="pe">📍</span><div><div class="pk">Where</div><div class="pv">'+esc(whereLbl)+'</div></div></div><div class="plan-line"><span class="pe">🍽️</span><div><div class="pk">What</div><div class="pv">'+esc(whatLbl)+'</div></div></div></div>';
+    if(!plan.locked){h+='<button class="btn block" id="lockBtn" style="background:var(--primary)">📢 Lock in &amp; post this plan</button><p class="scan-note" style="margin-top:10px">Everyone gets notified. You can still change it after.</p>';}
+    else{h+='<button class="btn block" id="shareBtn2" style="background:var(--split);margin-bottom:9px">📲 Share to WhatsApp</button><button class="btn ghost block" id="calBtn2" style="margin-bottom:9px">📅 Add to calendar</button><button class="btn ghost block" id="unlockBtn">✎ Change the plan</button>';}
+    h+='</div>';p.innerHTML=h;
+    var lb=$("#lockBtn");if(lb)lb.onclick=function(){SHARED.plan={locked:true,timeLabel:bestLabel()||"",whereName:wl?wl.name:"",whatName:fl?fl.name:"",whereUrl:(wl&&wl.url)||"",dt:(best&&best.c>0)?{d:best.d,t:best.t.k}:null,by:meId(),ts:now()};pushActivity(meName()+" posted the plan 📢 "+((bestLabel()||"")+(wl?" · "+wl.name:"")+(fl?" · "+fl.name:"")));commit();toast("Plan posted! 🎉");};
+    var ul=$("#unlockBtn");if(ul)ul.onclick=function(){SHARED.plan={locked:false};pushActivity(meName()+" reopened the plan ✎");commit();};
+    var sb=$("#shareBtn2");if(sb)sb.onclick=shareWhatsApp;
+    var cb=$("#calBtn2");if(cb)cb.onclick=openCalendar;
+  }
+
   /* ---- ARRIVE ---- */
   function panelArrive(){
     var p=$("#panel");p.className="panel fade";var mine=SHARED.arrival[meId()]||{};
@@ -695,11 +753,11 @@ input,select,textarea{font-family:inherit}
   function softSplit(){var b=SHARED.bill;var pres=presentList();var total=b.mode==="even"?(parseFloat(b.total)||0):b.items.reduce(function(s,it){return s+(parseFloat(it.amt)||0);},0);var shares=computeShares();Array.prototype.forEach.call(document.querySelectorAll(".who"),function(btn){var id=btn.getAttribute("data-who");var a=btn.querySelector(".amt");if(a)a.textContent=(b.present[id]!==false)?"S$"+money(shares[id]||0):"—";});Array.prototype.forEach.call(document.querySelectorAll("[data-owe]"),function(s){var id=s.getAttribute("data-owe");s.textContent="S$"+money(shares[id]||0);});Array.prototype.forEach.call(document.querySelectorAll("[data-isp]"),function(s){var it=b.items[+s.getAttribute("data-isp")];if(it)s.textContent="S$"+money(itemShare(it))+" ea";});var itot=document.getElementById("itemsTotal");if(itot)itot.textContent="S$"+money(total);var payer=b.payer?memberById(b.payer):{id:""};var back=pres.filter(function(m){return m.id!==payer.id;}).reduce(function(s,m){return s+(Math.round((shares[m.id]||0)*100)/100);},0);var pb=document.getElementById("payerBack");if(pb)pb.textContent="S$"+money(back);var chip=document.querySelector(".chip.lead");if(chip&&b.mode==="even")chip.textContent="S$"+money(total/(pres.length||1))+" each";}
 
   /* ---- share / calendar ---- */
-  function planSummary(){var b=bestLabel();var wl=SHARED.where.slice().sort(function(a,z){return z.votes.length-a.votes.length;})[0];var fl=SHARED.what.slice().sort(function(a,z){return z.votes.length-a.votes.length;})[0];var parts=[SHARED.event.name];if(b)parts.push("🗓️ "+b);if(wl&&wl.votes.length)parts.push("📍 "+wl.name);if(fl&&fl.votes.length)parts.push("🍽️ "+fl.name);return {text:parts.join("  ·  "),best:b,where:wl,what:fl};}
-  function shareWhatsApp(){var s=planSummary();window.open("https://wa.me/?text="+encodeURIComponent(s.text+"\n\nJoin & vote: "+location.href),"_blank");}
-  function gcalUrl(){var b=bestSlot();if(!b||b.c<=0)return null;var s=planSummary();var start=new Date(b.d+"T"+b.t.k+":00"),end=new Date(start.getTime()+2*3600000);function z(d){return d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+"T"+pad(d.getUTCHours())+pad(d.getUTCMinutes())+"00Z";}var loc=(s.where&&s.where.votes.length)?s.where.name:"";return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(SHARED.event.name)+"&dates="+z(start)+"/"+z(end)+"&details="+encodeURIComponent(s.text+"\n\nJoin: "+location.href)+"&location="+encodeURIComponent(loc);}
+  function planSummary(){var pl=SHARED.plan||{};var parts=[SHARED.event.name];if(pl.locked){if(pl.timeLabel)parts.push("🗓️ "+pl.timeLabel);if(pl.whereName)parts.push("📍 "+pl.whereName);if(pl.whatName)parts.push("🍽️ "+pl.whatName);}else{var b=bestLabel();var wl=topOf(SHARED.where);var fl=topOf(SHARED.what);if(b)parts.push("🗓️ "+b);if(wl)parts.push("📍 "+wl.name);if(fl)parts.push("🍽️ "+fl.name);}return {text:parts.join("  ·  ")};}
+  function shareWhatsApp(){var s=planSummary();var lead=(SHARED.plan&&SHARED.plan.locked)?"📢 It's on!\n":"";window.open("https://wa.me/?text="+encodeURIComponent(lead+s.text+"\n\nJoin & vote: "+location.href),"_blank");}
+  function gcalUrl(){var b=finalSlot();if(!b||b.c<=0)return null;var s=planSummary();var start=new Date(b.d+"T"+b.t.k+":00"),end=new Date(start.getTime()+2*3600000);function z(d){return d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+"T"+pad(d.getUTCHours())+pad(d.getUTCMinutes())+"00Z";}return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(SHARED.event.name)+"&dates="+z(start)+"/"+z(end)+"&details="+encodeURIComponent(s.text+"\n\nJoin: "+location.href)+"&location="+encodeURIComponent(locName());}
   function openCalendar(){var g=gcalUrl();var ov=el("div","overlay");var sheet=el("div","sheet");if(!g){sheet.innerHTML='<h2>Add to calendar 📅</h2><p>Vote on a time first (Step 1) so there\'s an event to add.</p><button class="btn block" id="cc">OK</button>';}else{sheet.innerHTML='<h2>Add to calendar 📅</h2><p>Adds the current best time.</p><button class="btn block" id="cg" style="margin-bottom:9px">📆 Google Calendar</button><button class="btn ghost block" id="ci" style="margin-bottom:9px">🍎 Apple / Outlook (.ics)</button><button class="btn ghost block" id="cc">Cancel</button>';}ov.appendChild(sheet);document.body.appendChild(ov);var cc=$("#cc");if(cc)cc.onclick=function(){ov.remove();};var cg=$("#cg");if(cg)cg.onclick=function(){window.open(g,"_blank");ov.remove();};var ci=$("#ci");if(ci)ci.onclick=function(){downloadICS();ov.remove();};}
-  function downloadICS(){var b=bestSlot();if(!b||b.c<=0){toast("Vote on a time first");return;}var s=planSummary();var start=new Date(b.d+"T"+b.t.k+":00"),end=new Date(start.getTime()+2*3600000);function z(d){return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"T"+pad(d.getHours())+pad(d.getMinutes())+"00";}var loc=(s.where&&s.where.votes.length)?s.where.name:"";var ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//GatherUp//EN","BEGIN:VEVENT","UID:"+genId()+"@gatherup","DTSTAMP:"+z(new Date()),"DTSTART:"+z(start),"DTEND:"+z(end),"SUMMARY:"+SHARED.event.name.replace(/\n/g," "),"LOCATION:"+loc.replace(/\n/g," "),"DESCRIPTION:"+s.text.replace(/\n/g," ")+" — "+location.href,"END:VEVENT","END:VCALENDAR"].join("\r\n");var blob=new Blob([ics],{type:"text/calendar"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download="gatherup.ics";document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},500);toast("📅 Calendar file downloaded");}
+  function downloadICS(){var b=finalSlot();if(!b||b.c<=0){toast("Vote on a time first");return;}var s=planSummary();var start=new Date(b.d+"T"+b.t.k+":00"),end=new Date(start.getTime()+2*3600000);function z(d){return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"T"+pad(d.getHours())+pad(d.getMinutes())+"00";}var loc=locName();var ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//GatherUp//EN","BEGIN:VEVENT","UID:"+genId()+"@gatherup","DTSTAMP:"+z(new Date()),"DTSTART:"+z(start),"DTEND:"+z(end),"SUMMARY:"+SHARED.event.name.replace(/\n/g," "),"LOCATION:"+loc.replace(/\n/g," "),"DESCRIPTION:"+s.text.replace(/\n/g," ")+" — "+location.href,"END:VEVENT","END:VCALENDAR"].join("\r\n");var blob=new Blob([ics],{type:"text/calendar"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download="gatherup.ics";document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},500);toast("📅 Calendar file downloaded");}
 
   /* ---- activity + countdown ---- */
   function openActivity(){actOpen=true;unread=0;$("#actWrap").classList.add("open");renderActivity();updateBell();}
@@ -709,7 +767,7 @@ input,select,textarea{font-family:inherit}
   function autoRemind(){if(applyingRemote||view!=="jio"||!account)return;var ev=SHARED.event;if(!ev||!ev.deadline)return;var diff=ev.deadline-now();if(diff<=0||diff>3600000)return;var p=participation("when");if(p.total===0||p.waiting.length===0)return;if(ev.lastAutoRemind&&(now()-ev.lastAutoRemind)<2700000)return;ev.lastAutoRemind=now();pushActivity("⏰ Voting closes soon! Still waiting on "+p.waiting.map(function(m){return m.name;}).join(", "));commit();}
   function renderCountdown(){var box=$("#evCountdown");if(!box)return;var dl=SHARED.event.deadline;if(!dl){box.innerHTML="";return;}var diff=dl-now();if(diff<=0){box.innerHTML='<span class="countdown closed">🔒 Voting closed</span>';return;}var h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);var txt=h>=24?(Math.floor(h/24)+"d "+(h%24)+"h"):(h>0?(h+"h "+m+"m"):(m+"m"));box.innerHTML='<span class="countdown'+(diff<3600000?" urgent":"")+'">⏳ Vote closes in '+txt+'</span>';}
 
-  function renderFoot(){var f=$("#footnav");if(!f)return;f.innerHTML="";if(step>0){var pb=el("button","btn ghost","‹ Back");pb.onclick=function(){step--;renderJio();};f.appendChild(pb);}if(step<STEPS.length-1){var nb=el("button","btn","Next: "+STEPS[step+1].lbl+" ›");nb.onclick=function(){step++;renderJio();};f.appendChild(nb);}else{var sb=el("button","btn ghost","📲 Share");sb.onclick=shareWhatsApp;var cb=el("button","btn","📅 Calendar");cb.style.background="var(--where)";cb.onclick=openCalendar;f.appendChild(sb);f.appendChild(cb);}}
+  function renderFoot(){var f=$("#footnav");if(!f)return;f.innerHTML="";if(step>0){var pb=el("button","btn ghost","‹ Back");pb.onclick=function(){step--;renderJio();};f.appendChild(pb);}if(step<STEPS.length-1){var nb=el("button","btn","Next: "+STEPS[step+1].lbl+" ›");nb.onclick=function(){step++;renderJio();};f.appendChild(nb);}else{var db=el("button","btn","All sorted 🎉");db.style.background="var(--split)";db.onclick=function(){toast("Gathering sorted end-to-end! 🎊");};f.appendChild(db);}}
 
   function renderJio(){
     if(!$("#stepper")){ renderJioShell(); }
@@ -719,8 +777,9 @@ input,select,textarea{font-family:inherit}
     var box=$("#avatars");if(box){box.innerHTML="";SHARED.members.slice(0,4).forEach(function(m){var a=el("div","av");a.style.background=m.color;a.textContent=initials(m.name);box.appendChild(a);});if(SHARED.members.length>4){var more=el("div","av av-more");more.textContent="+"+(SHARED.members.length-4);box.appendChild(more);}}
     var ec=$("#evCount");if(ec)ec.textContent=SHARED.members.length+(SHARED.members.length===1?" kaki":" kakis");
     var hint=$("#hint");if(hint)hint.innerHTML='Share the ⇪ link — friends log in and join. You\'re <b>'+esc(meName())+'</b>.';
+    var cbx=$("#confirmBox");if(cbx){var pl=SHARED.plan;if(pl&&pl.locked){var bits=[];if(pl.timeLabel)bits.push("🗓️ "+pl.timeLabel);if(pl.whereName)bits.push("📍 "+pl.whereName);if(pl.whatName)bits.push("🍽️ "+pl.whatName);cbx.innerHTML='<div class="confirm-banner"><div class="cl">📢 It\'s on!</div><div class="cx">'+esc(bits.join("  ·  ")||"Plan posted")+'</div></div>';}else cbx.innerHTML="";}
     renderStepper();var k=STEPS[step].k;
-    if(k==="when")panelWhen();else if(k==="where")optionPanel("where");else if(k==="what")optionPanel("what");else if(k==="arrive")panelArrive();else panelSplit();
+    if(k==="when")panelWhen();else if(k==="where")optionPanel("where");else if(k==="what")optionPanel("what");else if(k==="plan")panelPlan();else if(k==="arrive")panelArrive();else panelSplit();
     renderFoot();
     var wl=SHARED.where.slice().sort(function(a,b){return b.votes.length-a.votes.length;})[0];if($("#evWhere"))$("#evWhere").textContent=(wl&&wl.votes.length)?wl.name:"—";
     var bl=bestLabel();if($("#evWhen"))$("#evWhen").textContent=bl||"—";
